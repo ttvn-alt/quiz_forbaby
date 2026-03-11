@@ -67,7 +67,7 @@
     </div>
 </div>
 
-<script src="questions.js"></script>
+<script src="question.js"></script>
 
 <script>
     let currentQuestions = [];
@@ -75,12 +75,12 @@
 
     function startQuiz() {
         if (typeof quizData === 'undefined') {
-            alert("ไม่สามารถโหลดฐานข้อมูลข้อสอบได้ กรุณาตรวจสอบไฟล์ questions.js");
+            // แก้ไขข้อความแจ้งเตือนให้ตรงกัน
+            alert("ไม่สามารถโหลดฐานข้อมูลข้อสอบได้ กรุณาตรวจสอบไฟล์ question.js");
             return;
         }
 
         const level = document.getElementById('level-select').value;
-        // สุ่มข้อสอบมาแสดง (ถ้ามีเยอะจะสุ่มมาทำทีละเซ็ตก็ได้ ปัจจุบันดึงมาหมด)
         currentQuestions = quizData[level];
         userAnswers = new Array(currentQuestions.length).fill(null);
 
