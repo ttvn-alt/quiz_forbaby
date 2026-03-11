@@ -3,372 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz for Baby - Microbiology Final Exam</title>
+    <title>Nursing Micro Quiz - ระบบทดสอบจุลชีววิทยา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap');
-        
-        body { 
-            font-family: 'Prompt', sans-serif; 
-            background-color: #fff0f5; /* สีพื้นหลังชมพูอ่อนๆ สไตล์ Baby */
-            color: #333; 
-            margin: 0; 
-            padding: 20px; 
-        }
-        .container { 
-            max-width: 850px; 
-            margin: 0 auto; 
-            background-color: #ffffff; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3); 
-            border: 3px solid #ffe4e1;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .logo {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-        h1 { 
-            color: #ff69b4; 
-            margin: 0;
-            font-size: 32px;
-        }
-        h2 {
-            color: #778899;
-            font-size: 18px;
-            font-weight: 400;
-            margin-top: 5px;
-        }
-        .question-box { 
-            background-color: #f8fcfd; 
-            padding: 25px; 
-            margin-bottom: 25px; 
-            border-radius: 15px; 
-            border-left: 6px solid #87cefa; 
-            transition: all 0.3s ease;
-        }
-        .question-box:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
-        }
-        .question-text { 
-            font-size: 17px; 
-            font-weight: 600; 
-            margin-bottom: 15px; 
-            color: #2c3e50; 
-            line-height: 1.5;
-        }
-        .options { 
-            list-style-type: none; 
-            padding: 0; 
-            margin: 0; 
-        }
-        .options li { 
-            margin-bottom: 12px; 
-            background-color: #fff;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-        .options li:hover {
-            background-color: #f0f8ff;
-        }
-        label { 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            padding: 12px 15px;
-            font-size: 15px; 
-        }
-        input[type="radio"] { 
-            margin-right: 15px; 
-            transform: scale(1.3); 
-            cursor: pointer; 
-            accent-color: #ff69b4;
-        }
-        button { 
-            background: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
-            color: white; 
-            border: none; 
-            padding: 18px 20px; 
-            font-size: 20px; 
-            font-weight: 600; 
-            border-radius: 50px; 
-            cursor: pointer; 
-            width: 100%; 
-            transition: transform 0.2s, box-shadow 0.2s; 
-            margin-top: 20px; 
-            font-family: 'Prompt', sans-serif;
-        }
-        button:hover { 
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4); 
-        }
-        #result-box { 
-            margin-top: 30px; 
-            text-align: center; 
-            display: none; 
-            padding: 30px; 
-            border-radius: 15px; 
-            font-size: 20px; 
-            line-height: 1.6;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .score-excellent { background-color: #e8f8f5; color: #117a65; border: 2px solid #a3e4d7; }
-        .score-good { background-color: #fef9e7; color: #b9770e; border: 2px solid #f9e79f; }
-        .score-needs-work { background-color: #fdedec; color: #a93226; border: 2px solid #f5b7b1; }
-        .clinical-hint {
-            display: inline-block;
-            background-color: #ffe4e1;
-            color: #d2691e;
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
+        body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; color: #333; }
+        .correct-ans { background-color: #d4edda !important; border-color: #c3e6cb !important; color: #155724; font-weight: bold; }
+        .wrong-ans { background-color: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; text-decoration: line-through; }
+        .explanation { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 12px; margin-top: 10px; border-radius: 4px; font-size: 0.95rem; color: #2c3e50; display: none; }
+        input[type="radio"]:disabled { cursor: not-allowed; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-<div class="container">
-    <div class="header">
-        <div class="logo">🍼✨</div>
-        <h1>Quiz for Baby</h1>
-        <h2>Microbiology Final Exam Prep (Nursing Level)</h2>
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="bg-blue-600 text-white p-6 text-center">
+        <h1 class="text-3xl font-bold mb-2">🦠 Nursing Micro Quiz</h1>
+        <p class="text-blue-100">ระบบทดสอบจุลชีววิทยา (Microbiology) สำหรับเตรียมสอบ Final</p>
     </div>
 
-    <form id="quizForm">
-
-        <div class="question-box">
-            <span class="clinical-hint">Clinical Application: Septic Shock</span>
-            <div class="question-text">1. ผู้ป่วยติดเชื้อแบคทีเรียแกรมลบ (Gram-negative) ในกระแสเลือดและเกิดภาวะช็อก (Septic shock) อาการช็อกนี้เกิดจากองค์ประกอบใดของผนังเซลล์แบคทีเรียที่กระตุ้นภูมิคุ้มกันอย่างรุนแรงเมื่อเซลล์แตก?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q1" value="a"> A) Teichoic acid</label></li>
-                <li><label><input type="radio" name="q1" value="b"> B) Peptidoglycan</label></li>
-                <li><label><input type="radio" name="q1" value="c"> C) Lipid A (ส่วนหนึ่งของ Lipopolysaccharide)</label></li>
-                <li><label><input type="radio" name="q1" value="d"> D) Beta-1,3-D-glucan</label></li>
-            </ul>
+    <div id="setup-section" class="p-8">
+        <div class="mb-6">
+            <label class="block text-gray-700 font-bold mb-2 text-lg">📚 เลือกวิชา:</label>
+            <select id="subject-select" class="w-full border-2 border-gray-200 rounded-lg p-3 text-lg focus:border-blue-500 outline-none">
+                <option value="micro">Microbiology (จุลชีววิทยา)</option>
+            </select>
         </div>
 
-        <div class="question-box">
-            <span class="clinical-hint">Pharmacology & Treatment</span>
-            <div class="question-text">2. ผู้ป่วยได้รับการวินิจฉัยว่าเป็น "โรคปอดบวมเดินได้" (Walking pneumonia) จากเชื้อ Mycoplasma pneumoniae ทำไมแพทย์จึงหลีกเลี่ยงการจ่ายยาปฏิชีวนะกลุ่มที่ทำลายผนังเซลล์ (เช่น Penicillin หรือ Cephalosporin)?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q2" value="a"> A) เพราะเชื้อ Mycoplasma ดื้อยาโดยการสร้างเอนไซม์ทำลายยา</label></li>
-                <li><label><input type="radio" name="q2" value="b"> B) เพราะเชื้อ Mycoplasma เป็นแบคทีเรียที่ "ไม่มีผนังเซลล์" (No cell wall) ยาจึงไม่มีเป้าหมายให้ออกฤทธิ์</label></li>
-                <li><label><input type="radio" name="q2" value="c"> C) เพราะยาไม่สามารถละลายผ่าน Outer membrane ของเชื้อได้</label></li>
-                <li><label><input type="radio" name="q2" value="d"> D) เพราะเชื้อ Mycoplasma เป็นเชื้อรา ไม่ใช่แบคทีเรีย</label></li>
-            </ul>
+        <div class="mb-8">
+            <label class="block text-gray-700 font-bold mb-2 text-lg">⚡ เลือกระดับความยาก (10 ข้อ):</label>
+            <select id="level-select" class="w-full border-2 border-gray-200 rounded-lg p-3 text-lg focus:border-blue-500 outline-none">
+                <option value="easy">🟢 ระดับง่าย (Easy - ทบทวนความจำพื้นฐาน)</option>
+                <option value="medium">🟡 ระดับปานกลาง (Medium - เข้าใจกลไกและกระบวนการ)</option>
+                <option value="hard">🔴 ระดับโคตรยาก (Super Hard - ประยุกต์คลินิกและเก็งข้อสอบ)</option>
+            </select>
         </div>
 
-        <div class="question-box">
-            <span class="clinical-hint">Infection Control</span>
-            <div class="question-text">3. ในฐานะพยาบาลควบคุมการติดเชื้อ (IC Ward) หากพบผู้ป่วยติดเชื้อที่สร้าง "สปอร์" (Spores) ได้ การทำความสะอาดมือวิธีใดเหมาะสมและมีประสิทธิภาพที่สุดตามหลักจุลชีววิทยา?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q3" value="a"> A) ใช้ Alcohol hand rub 70% ถูให้ทั่วเป็นเวลา 30 วินาที</label></li>
-                <li><label><input type="radio" name="q3" value="b"> B) ล้างมือด้วยสบู่และน้ำให้นานเพียงพอ (Handwashing long enough with soap)</label></li>
-                <li><label><input type="radio" name="q3" value="c"> C) เช็ดมือด้วยน้ำเกลือปราศจากเชื้อ (Normal Saline)</label></li>
-                <li><label><input type="radio" name="q3" value="d"> D) สเปรย์แอลกอฮอล์ 95% ทิ้งไว้ให้แห้ง</label></li>
-            </ul>
+        <button onclick="startQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-xl transition duration-200 shadow-lg">
+            เริ่มทำแบบทดสอบ 🚀
+        </button>
+    </div>
+
+    <div id="quiz-section" class="hidden p-8">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 id="quiz-title" class="text-2xl font-bold text-gray-800"></h2>
+            <span class="bg-gray-200 text-gray-700 px-4 py-1 rounded-full text-sm font-bold">10 ข้อ</span>
         </div>
 
-        <div class="question-box">
-            <span class="clinical-hint">Laboratory Diagnosis</span>
-            <div class="question-text">4. ในขั้นตอนการย้อมสีแกรม (Gram staining) ของแบคทีเรียแกรมลบ การใช้แอลกอฮอล์ (Alcohol) ในขั้นตอน Decolorization ส่งผลอย่างไรในระดับเซลล์?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q4" value="a"> A) แอลกอฮอล์เข้าไปทำลายชั้น Peptidoglycan โดยตรง</label></li>
-                <li><label><input type="radio" name="q4" value="b"> B) แอลกอฮอล์ทำให้ชั้น Peptidoglycan หดตัวและกักเก็บสีม่วงไว้</label></li>
-                <li><label><input type="radio" name="q4" value="c"> C) แอลกอฮอล์ละลายชั้น Outer membrane (Lipid) ออกไป ทำให้สีม่วงหลุดออกมาด้วย</label></li>
-                <li><label><input type="radio" name="q4" value="d"> D) แอลกอฮอล์เปลี่ยนโครงสร้างสี Crystal violet ให้กลายเป็นสีแดง</label></li>
-            </ul>
-        </div>
+        <div id="questions-container"></div>
 
-        <div class="question-box">
-            <span class="clinical-hint">Pharmacology & Mechanism</span>
-            <div class="question-text">5. ยาปฏิชีวนะกลุ่ม Broad-spectrum (ออกฤทธิ์กว้าง) มีกลไกใดที่ทำให้สามารถต้านทานแบคทีเรียแกรมลบได้ดีกว่ากลุ่ม Narrow-spectrum?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q5" value="a"> A) ยามีลักษณะชอบไขมัน (Hydrophobic) จึงละลายผ่านเซลล์เมมเบรนได้ดี</label></li>
-                <li><label><input type="radio" name="q5" value="b"> B) ยามีลักษณะชอบน้ำ (Hydrophilic) เล็กพอที่จะผ่านรู (Pore) ของ Outer membrane เข้าไปได้</label></li>
-                <li><label><input type="radio" name="q5" value="c"> C) ยาสามารถทำลาย Lipid A ของแกรมลบได้โดยตรง</label></li>
-                <li><label><input type="radio" name="q5" value="d"> D) ยาสามารถจับกับโปรตีน Histone ในนิวเคลียสของแบคทีเรียได้</label></li>
-            </ul>
-        </div>
+        <button id="submit-btn" onclick="submitQuiz()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition duration-200 shadow-lg mt-8 hidden">
+            ส่งคำตอบและดูผลคะแนน ✅
+        </button>
 
-        <div class="question-box">
-            <span class="clinical-hint">Fungal Infection</span>
-            <div class="question-text">6. ผู้ป่วยภูมิคุ้มกันบกพร่องติดเชื้อรา Candida albicans ในกระแสเลือด แพทย์สั่งจ่ายยาต้านเชื้อรากลุ่ม Echinocandins ยานี้มีเป้าหมาย (Drug target) ไปที่โครงสร้างใด?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q6" value="a"> A) 30S ribosomal subunit</label></li>
-                <li><label><input type="radio" name="q6" value="b"> B) เอนไซม์ 1,3-beta-D-glucan synthase ในผนังเซลล์</label></li>
-                <li><label><input type="radio" name="q6" value="c"> C) การสร้าง Teichoic acid</label></li>
-                <li><label><input type="radio" name="q6" value="d"> D) การจำลอง DNA ของเชื้อรา</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Genetics & Mutation</span>
-            <div class="question-text">7. ทำไมแบคทีเรียจึงมีโอกาสเกิดการกลายพันธุ์ (Mutation rate) "ต่อรอบของการจำลอง DNA" ต่ำกว่าเมื่อเปรียบเทียบกับจีโนมขนาดใหญ่ แต่กลับดื้อยาได้เร็วมาก?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q7" value="a"> A) เพราะมีกระบวนการตัดต่อ mRNA (Splicing) เพื่อแก้ไขยีน</label></li>
-                <li><label><input type="radio" name="q7" value="b"> B) เพราะเอนไซม์ DNA polymerase ของแบคทีเรียมีความสามารถในการตรวจทานและแก้ไข (Proofreading ability) ได้ดีกว่า</label></li>
-                <li><label><input type="radio" name="q7" value="c"> C) เพราะแบคทีเรียมี DNA แบบวงแหวนหลายวง (Plasmids) คอยสกัดกั้นการกลายพันธุ์</label></li>
-                <li><label><input type="radio" name="q7" value="d"> D) เพราะแบคทีเรียใช้เวลาแบ่งเซลล์นานมาก ทำให้มีเวลาตรวจสอบความผิดปกติ</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Basic Cell Biology</span>
-            <div class="question-text">8. โครงสร้างและการทำงานของ mRNA ในแบคทีเรีย แตกต่างจากเซลล์ของมนุษย์ (Eukaryote) อย่างไร ซึ่งเป็นเหตุผลที่แบคทีเรียตอบสนองต่อสิ่งแวดล้อมได้รวดเร็ว?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q8" value="a"> A) แบคทีเรียมี mRNA แบบ Polycistronic (1 mRNA ถอดรหัสได้หลายยีน) และไม่มีกระบวนการตัดแต่ง mRNA</label></li>
-                <li><label><input type="radio" name="q8" value="b"> B) mRNA ของแบคทีเรียมีอายุการใช้งานยาวนานมาก (Long-lived mRNA)</label></li>
-                <li><label><input type="radio" name="q8" value="c"> C) แบคทีเรียมีการเติม 5' cap และ polyA tail เพื่อป้องกัน mRNA ถูกทำลาย</label></li>
-                <li><label><input type="radio" name="q8" value="d"> D) mRNA ของแบคทีเรียถูกสร้างในนิวเคลียสก่อนส่งออกมาที่ไซโทพลาซึม</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Diagnostic Timing</span>
-            <div class="question-text">9. หากเกิดการระบาดของโรคติดเชื้อปริศนา และต้องการทราบผลการตรวจหาชนิดของเชื้ออย่างรวดเร็วที่สุด (ภายในไม่กี่ชั่วโมง) ควรเลือกส่งสิ่งส่งตรวจด้วยวิธีใด?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q9" value="a"> A) การตรวจหาระดับภูมิคุ้มกัน (Antibody/ELISA) ในเลือดผู้ป่วย</label></li>
-                <li><label><input type="radio" name="q9" value="b"> B) การเพาะเชื้อบนอาหารเลี้ยงเชื้อ (Solid agar plate)</label></li>
-                <li><label><input type="radio" name="q9" value="c"> C) การตรวจหาสารพันธุกรรมของเชื้อ (Nucleic acid detection เช่น PCR)</label></li>
-                <li><label><input type="radio" name="q9" value="d"> D) การตรวจวัดระดับไซโทไคน์ (Cytokines storm)</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Diagnostic Timing</span>
-            <div class="question-text">10. เหตุใดการส่งตรวจทางน้ำเหลืองวิทยา (Serological test เช่น ตรวจหา Antibody) จึงอาจให้ผลลบลวง (False negative) หากตรวจในวันแรกที่ผู้ป่วยมีอาการไข้?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q10" value="a"> A) เพราะ Antibody จะถูกทำลายด้วยไข้ที่สูงเกินไป</label></li>
-                <li><label><input type="radio" name="q10" value="b"> B) เพราะต้องใช้เวลา 7-14 วัน หลังการติดเชื้อ ร่างกายจึงจะสร้างภูมิคุ้มกัน (Antibody) ในระดับที่ตรวจวัดได้</label></li>
-                <li><label><input type="radio" name="q10" value="c"> C) เพราะเชื้อแบคทีเรียส่วนใหญ่ไม่มีโปรตีนที่เป็น Antigen</label></li>
-                <li><label><input type="radio" name="q10" value="d"> D) เพราะชุดตรวจมักจะไวต่อสารพันธุกรรมมากกว่าโปรตีน</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Gram Positive Structure</span>
-            <div class="question-text">11. โครงสร้างใดที่เป็นองค์ประกอบเฉพาะของแบคทีเรียแกรมบวก (Gram-positive) มีประจุลบ และทำหน้าที่ควบคุมการทำงานของเอนไซม์ Autolysin?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q11" value="a"> A) Lipopolysaccharide (LPS)</label></li>
-                <li><label><input type="radio" name="q11" value="b"> B) Porins</label></li>
-                <li><label><input type="radio" name="q11" value="c"> C) Teichoic acid</label></li>
-                <li><label><input type="radio" name="q11" value="d"> D) Periplasmic space</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Vaccines & Prevention</span>
-            <div class="question-text">12. ข้อใดเป็นความจริงเกี่ยวกับการใช้วัคซีนในการป้องกันโรคติดเชื้อตามสไลด์การสอน?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q12" value="a"> A) ปัจจุบันมีวัคซีนที่สามารถป้องกันโรคจากเชื้อรา (Fungi) ได้ทุกชนิด</label></li>
-                <li><label><input type="radio" name="q12" value="b"> B) การฉีดวัคซีนสามารถป้องกันการดื้อยาของแบคทีเรียแกรมลบได้</label></li>
-                <li><label><input type="radio" name="q12" value="c"> C) ปัจจุบันมีวัคซีนสำหรับแบคทีเรียบางชนิด แต่ยังไม่มีวัคซีนสำหรับเชื้อรา (Eukaryotes)</label></li>
-                <li><label><input type="radio" name="q12" value="d"> D) วัคซีนมีประสิทธิภาพในการทำลายสปอร์ของแบคทีเรียในสิ่งแวดล้อม</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Normal Flora</span>
-            <div class="question-text">13. แบคทีเรียกลุ่ม Archaebacteria มีความสำคัญทางการแพทย์ในลักษณะใด?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q13" value="a"> A) เป็นสาเหตุหลักของการติดเชื้อในโรงพยาบาล (Nosocomial infection)</label></li>
-                <li><label><input type="radio" name="q13" value="b"> B) ไม่มีผนังเซลล์ จึงก่อโรคปอดบวมรุนแรง</label></li>
-                <li><label><input type="radio" name="q13" value="c"> C) มีสปอร์ที่ทนความร้อนสูงมาก ทำให้เครื่องมือแพทย์ปนเปื้อน</label></li>
-                <li><label><input type="radio" name="q13" value="d"> D) ไม่ใช่เชื้อก่อโรค (No pathogens) แต่เป็นเพียงเชื้อประจำถิ่น (Normal flora) และดื้อยาปฏิชีวนะหลายชนิดเพราะไม่มี Peptidoglycan</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Microbial Growth</span>
-            <div class="question-text">14. ในการรายงานผลการเพาะเชื้อแบคทีเรียจากปัสสาวะผู้ป่วย (Urine culture) พยาบาลจะเห็นการนับจำนวนเชื้อที่เจริญบน Solid agar plate ในหน่วยใด?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q14" value="a"> A) PFU (Plaque forming unit)</label></li>
-                <li><label><input type="radio" name="q14" value="b"> B) CFU (Colony forming unit)</label></li>
-                <li><label><input type="radio" name="q14" value="c"> C) Cells/mL</label></li>
-                <li><label><input type="radio" name="q14" value="d"> D) IU (International Unit)</label></li>
-            </ul>
-        </div>
-
-        <div class="question-box">
-            <span class="clinical-hint">Fundamental Differences</span>
-            <div class="question-text">15. ความแตกต่างที่สำคัญที่สุดในการจัดจำแนกแบคทีเรีย (Prokaryote) และเชื้อรา (Eukaryote) คืออะไร?</div>
-            <ul class="options">
-                <li><label><input type="radio" name="q15" value="a"> A) เชื้อรามี DNA เป็นวงแหวน (Circular DNA) แต่แบคทีเรียมี DNA เป็นเส้นตรง</label></li>
-                <li><label><input type="radio" name="q15" value="b"> B) แบคทีเรียมีเยื่อหุ้มนิวเคลียส (Nuclear membrane) แต่เชื้อราไม่มี</label></li>
-                <li><label><input type="radio" name="q15" value="c"> C) เชื้อรามีออร์แกเนลล์ที่มีเยื่อหุ้มและมีนิวเคลียสที่แท้จริง ในขณะที่แบคทีเรียไม่มีเยื่อหุ้มนิวเคลียส</label></li>
-                <li><label><input type="radio" name="q15" value="d"> D) แบคทีเรียสืบพันธุ์โดยอาศัยเพศ (Mitosis/Meiosis) แต่เชื้อราใช้การแบ่งเซลล์แบบ Binary fission</label></li>
-            </ul>
-        </div>
-
-        <button type="button" onclick="checkAnswers()">📋 ส่งคำตอบ และประเมินผล</button>
-    </form>
-    
-    <div id="result-box"></div>
-
+        <div id="result-box" class="mt-8 text-center p-6 rounded-xl hidden"></div>
+        
+        <button id="restart-btn" onclick="location.reload()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-lg transition duration-200 mt-4 hidden">
+            🔄 กลับไปหน้าเริ่มต้น
+        </button>
+    </div>
 </div>
 
 <script>
-    function checkAnswers() {
-        // เฉลยตามเนื้อหาในสไลด์
-        const answers = {
-            q1: 'c', // Lipid A (Endotoxin)
-            q2: 'b', // Mycoplasma no cell wall
-            q3: 'b', // Spores need handwashing with soap
-            q4: 'c', // Alcohol dissolves outer membrane in Gram negative
-            q5: 'b', // Hydrophilic goes through pore
-            q6: 'b', // Echinocandins target 1,3-beta-D-glucan synthase
-            q7: 'b', // Better proofreading ability
-            q8: 'a', // Polycistronic, no processing
-            q9: 'c', // PCR (within hours)
-            q10: 'b', // Antibody takes 7-14 days
-            q11: 'c', // Teichoic acid in Gram positive
-            q12: 'c', // No vaccine for fungi
-            q13: 'd', // Archaebacteria: no pathogens, normal flora
-            q14: 'b', // CFU (Colony forming unit)
-            q15: 'c'  // Eukaryote has nucleus/organelles, Prokaryote does not
-        };
+    // ฐานข้อมูลข้อสอบ
+    const quizData = {
+        easy: [
+            { q: "แบคทีเรียจัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Virus", "Prion"], ans: 0, reason: "แบคทีเรียไม่มีเยื่อหุ้มนิวเคลียส (No nuclear membrane) และไม่มีออร์แกเนลล์ที่มีเยื่อหุ้ม จึงจัดเป็น Prokaryote" },
+            { q: "เชื้อรา (Fungi) จัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Acellular", "Archaea"], ans: 1, reason: "เชื้อราเป็นสิ่งมีชีวิตที่มีเยื่อหุ้มนิวเคลียส (True nucleus) และออร์แกเนลล์ จัดเป็น Eukaryote" },
+            { q: "โครงสร้างหลักที่พบในผนังเซลล์ของแบคทีเรียคืออะไร?", options: ["Chitin", "Cellulose", "Peptidoglycan", "Beta-glucan"], ans: 2, reason: "ผนังเซลล์ของแบคทีเรีย (Cell wall) ประกอบด้วยสาร Peptidoglycan เป็นหลัก" },
+            { q: "แบคทีเรียแกรมบวก (Gram positive) มีลักษณะผนังเซลล์อย่างไร?", options: ["ชั้น Peptidoglycan บาง", "ชั้น Peptidoglycan หนา", "ไม่มี Peptidoglycan", "มี Outer membrane"], ans: 1, reason: "แบคทีเรียแกรมบวกมีชั้น Peptidoglycan ที่หนามาก ทำให้ย้อมติดสีม่วง (Crystal violet)" },
+            { q: "แบคทีเรียชนิดใด 'ไม่มีผนังเซลล์'?", options: ["E. coli", "Mycoplasma", "Candida", "Staphylococcus"], ans: 1, reason: "Mycoplasma เป็นแบคทีเรียกลุ่ม Atypical ที่ไม่มีผนังเซลล์ (No wall) ทำให้ยาที่ทำลายผนังเซลล์ใช้ไม่ได้ผล" },
+            { q: "ผนังเซลล์ของเชื้อรา (Fungi) ประกอบด้วยสารใดเป็นหลัก?", options: ["Peptidoglycan", "Teichoic acid", "Lipid A", "Beta-1,3-D-glucan"], ans: 3, reason: "เซลล์ของเชื้อรามีผนังเซลล์ที่ประกอบด้วย Beta-1,3-D-glucan, Chitin หรือ Cellulose" },
+            { q: "โครงสร้างใดของแบคทีเรียมี DNA รูปวงแหวนที่อยู่นอกโครโมโซมหลัก?", options: ["Nucleolus", "Plasmid", "Ribosome", "Mitochondria"], ans: 1, reason: "Plasmid คือ Extrachromosomal DNA รูปวงแหวนของแบคทีเรีย ซึ่งมักมียีนดื้อยาอยู่" },
+            { q: "กระบวนการแบ่งเซลล์ของแบคทีเรียเรียกว่าอะไร?", options: ["Mitosis", "Meiosis", "Binary fission", "Budding"], ans: 2, reason: "แบคทีเรียเพิ่มจำนวนโดยการแบ่งเซลล์แบบ Binary fission" },
+            { q: "วิธีใดมีประสิทธิภาพที่สุดในการกำจัด 'สปอร์' ของเชื้อบนมือ?", options: ["เช็ดด้วยแอลกอฮอล์ 70%", "ล้างมือด้วยสบู่ให้นานพอ", "เช็ดด้วยน้ำเกลือ", "สเปรย์น้ำร้อน"], ans: 1, reason: "สปอร์ทนทานต่อแอลกอฮอล์ ต้องใช้วิธีล้างมือด้วยสบู่ (Handwashing) ให้นานเพียงพอเพื่อให้สปอร์หลุดออกไป" },
+            { q: "ปัจจุบันมีวัคซีนที่ใช้ป้องกัน 'เชื้อรา' (Fungi) หรือไม่?", options: ["มีเฉพาะเชื้อราทางผิวหนัง", "มีครบทุกชนิด", "ยังไม่มีวัคซีนสำหรับเชื้อรา", "มีเฉพาะในเด็ก"], ans: 2, reason: "ปัจจุบันมีวัคซีนป้องกันแบคทีเรียบางชนิด แต่ยังไม่มีวัคซีนสำหรับเชื้อรา (Eukaryotes) เลย" }
+        ],
+        medium: [
+            { q: "ส่วนใดของ Lipopolysaccharide (LPS) ในแบคทีเรียแกรมลบที่ทำหน้าที่เป็นสารพิษ Endotoxin?", options: ["O-antigen", "Core polysaccharide", "Lipid A", "Teichoic acid"], ans: 2, reason: "Lipid A เป็นส่วนประกอบของ LPS ที่ทำหน้าที่เป็น Endotoxin กระตุ้นภูมิคุ้มกันให้เกิดไข้หรือช็อกได้" },
+            { q: "ยาต้านเชื้อรากลุ่ม Echinocandins ออกฤทธิ์ยับยั้งเป้าหมายใด?", options: ["ไรโบโซม 30S", "เอนไซม์ 1,3-beta-D-glucan synthase", "DNA polymerase", "การสร้างโปรตีน"], ans: 1, reason: "ยา Echinocandins ยับยั้งเอนไซม์ 1,3-beta-D-glucan synthase ทำให้เชื้อราสร้างผนังเซลล์ไม่ได้และเซลล์แตกตาย" },
+            { q: "mRNA ของแบคทีเรียมีลักษณะเฉพาะตามข้อใด?", options: ["เป็นแบบ Monocistronic", "ต้องมีการตัดแต่ง (Splicing) ก่อนแปลรหัส", "เป็นแบบ Polycistronic (1 mRNA ถอดรหัสได้หลายยีน)", "มีอายุการใช้งานนานมาก"], ans: 2, reason: "แบคทีเรียมี mRNA แบบ Polycistronic คือสร้างเส้นเดียวแต่มีข้อมูลของโปรตีนหลายชนิด และไม่มีการทำ mRNA processing" },
+            { q: "โครงสร้างใดที่พบในผนังเซลล์แบคทีเรียแกรมบวกและมีประจุลบ?", options: ["Outer membrane", "Teichoic acid", "Porin", "Lipoprotein"], ans: 1, reason: "Teichoic acid พบเฉพาะในแกรมบวก เป็นประจุลบช่วยดึงดูดไอออนและควบคุมเอนไซม์ Autolysin" },
+            { q: "ทำไมยาปฏิชีวนะกลุ่ม Broad-spectrum จึงสามารถผ่าน Outer membrane ของแบคทีเรียแกรมลบได้ดีกว่า?", options: ["เพราะยามีคุณสมบัติชอบไขมัน (Hydrophobic)", "เพราะยาทำลาย Lipid A", "เพราะยามีคุณสมบัติชอบน้ำ (Hydrophilic) และผ่านรู Porin ได้", "เพราะยามีขนาดใหญ่"], ans: 2, reason: "ยา Broad-spectrum มักเป็น Hydrophilic และมีขนาดพอเหมาะที่จะลอดผ่านรู (Pore/Porin) บน Outer membrane ของแกรมลบได้" },
+            { q: "การจำลอง DNA (Replication) ของแบคทีเรีย แตกต่างจากเชื้อราในข้อใด?", options: ["แบคทีเรียมีจุดเริ่มต้นหลายจุด", "แบคทีเรียมีจุดเริ่มต้น (origin) เพียง 1 จุด", "เชื้อราจำลองได้เร็วกว่า", "เชื้อราไม่มี origin"], ans: 1, reason: "แบคทีเรียมี DNA แบบวงแหวนและมี Origin of replication เพียง 1 จุด (เชื้อรามีหลายจุด)" },
+            { q: "กระบวนการ Transcription (ถอดรหัส) ของเชื้อราเกิดขึ้นที่บริเวณใด?", options: ["ไซโทพลาซึม", "นิวเคลียส", "ผนังเซลล์", "ไรโบโซม"], ans: 1, reason: "เชื้อราเป็น Eukaryote มีนิวเคลียส กระบวนการ Transcription จึงเกิดขึ้นภายในนิวเคลียส (ต่างจากแบคทีเรียที่เกิดในไซโทพลาซึม)" },
+            { q: "หากต้องการทราบผลการติดเชื้อภายในเวลา 'ไม่กี่ชั่วโมง' ควรใช้วิธีใด?", options: ["ตรวจหาระดับ Antibody", "เพาะเชื้อบนอาหารแข็ง (Culture)", "ตรวจหาสารพันธุกรรม (Nucleic acid / PCR)", "ตรวจหา Cytokine"], ans: 2, reason: "PCR (Nucleic acid detection) สามารถทราบผลได้ในเวลาเป็นชั่วโมง ขณะที่ Culture หรือรอ Antibody ต้องใช้เวลาเป็นวัน" },
+            { q: "การรายงานผลเพาะเชื้อจากสิ่งส่งตรวจบน Agar plate นับจำนวนในหน่วยใด?", options: ["PFU", "CFU (Colony forming unit)", "Cells/ml", "OD"], ans: 1, reason: "โคโลนีของแบคทีเรียที่เจริญบนอาหารแข็ง จะถูกนับเป็นหน่วย CFU" },
+            { q: "แบคทีเรีย Mycoplasma pneumoniae ทำให้เกิดโรคใดและมีลักษณะพิเศษอย่างไร?", options: ["โรคปอดบวมเดินได้ (Walking pneumonia) และไม่มีผนังเซลล์", "โรควัณโรค และมีผนังเซลล์หนา", "โรคติดเชื้อในกระแสเลือด และมี LPS", "โรคอาหารเป็นพิษ และมีสปอร์"], ans: 0, reason: "Mycoplasma ก่อโรค Walking pneumonia และลักษณะสำคัญคือ ไม่มีผนังเซลล์ (No cell wall) จึงไม่ติดสีแกรม" }
+        ],
+        hard: [
+            { q: "ผู้ป่วยติดเชื้อแกรมลบในกระแสเลือด (Septicemia) และเกิดภาวะช็อก อาการนี้เกี่ยวข้องกับกลไกใดของเชื้อโดยตรง?", options: ["เชื้อปล่อย Exotoxin ไปทำลายเซลล์เม็ดเลือดแดง", "Lipid A จาก LPS กระตุ้นระบบภูมิคุ้มกัน (Cytokine storm) อย่างรุนแรงเมื่อเซลล์แตก", "Teichoic acid ทำปฏิกิริยากับผนังหลอดเลือด", "เชื้อสร้างสปอร์อุดตันหลอดเลือด"], ans: 1, reason: "โครงสร้าง Lipid A (Endotoxin) ของแบคทีเรียแกรมลบ เมื่อเชื้อตายหรือแบ่งตัวจะถูกปล่อยออกมา กระตุ้นภูมิคุ้มกันจนเกิดภาวะ Septic shock" },
+            { q: "แพทย์จ่ายยา Penicillin ให้ผู้ป่วยที่ติดเชื้อ Mycoplasma ผลการรักษาจะเป็นอย่างไร?", options: ["หายเร็วขึ้นเพราะยาทำลายผนังเซลล์", "อาการแย่ลงเพราะยากระตุ้นสปอร์", "ไม่ได้ผล เพราะ Mycoplasma ไม่มี Peptidoglycan ที่เป็นเป้าหมายของยา", "ได้ผลดีเพราะยามุ่งเป้าที่โปรตีนภายใน"], ans: 2, reason: "ยา Penicillin จัดอยู่ในกลุ่ม Beta-lactam ที่ออกฤทธิ์ทำลายผนังเซลล์ แต่ Mycoplasma ไม่มีผนังเซลล์ ยาจึงไม่มีเป้าหมายให้ออกฤทธิ์" },
+            { q: "ในขั้นตอนการย้อมสีแกรม การใช้แอลกอฮอล์ (Alcohol) มีผลต่อแบคทีเรียแกรมลบอย่างไร?", options: ["ละลายชั้น Lipid (LPS) ทำให้สี Crystal violet หลุดออกจากชั้น Peptidoglycan ที่บาง", "ทำให้ชั้น Peptidoglycan หดตัวและกักเก็บสีไว้", "เปลี่ยนสี Crystal violet เป็นสีแดง", "ทำลายเยื่อหุ้มนิวเคลียส"], ans: 0, reason: "แอลกอฮอล์ทำหน้าที่เป็น Decolorizer ละลายชั้นไขมัน (Outer membrane) ของแกรมลบ สีม่วงจึงหลุดออก ทำให้ติดสีแดง Safranin ในตอนท้าย" },
+            { q: "เหตุใดแบคทีเรียจึงมี Mutation rate (อัตรากลายพันธุ์) 'ต่อรอบการจำลอง DNA' ต่ำกว่า แม้ว่าแบคทีเรียจะดื้อยาได้เร็ว?", options: ["แบคทีเรียมีการ Splicing แก้ไขยีน", "เอนไซม์ DNA polymerase ของแบคทีเรียมีความสามารถในการตรวจทาน (Proofreading) ที่ดีกว่า", "แบคทีเรียใช้เวลาแบ่งเซลล์นานมาก", "แบคทีเรียไม่มีเอนไซม์ RNA polymerase"], ans: 1, reason: "DNA polymerase ของแบคทีเรียมี Proofreading ที่ดีกว่าทำให้อัตรากลายพันธุ์ต่อรอบต่ำ แต่ที่ดื้อยาเร็วเพราะมันแบ่งตัวแบบก้าวกระโดด (Fast generation time)" },
+            { q: "กลไกใดที่ทำให้แบคทีเรียสามารถสร้างโปรตีนตอบสนองต่อสภาพแวดล้อมได้รวดเร็วกว่าเชื้อรา?", options: ["เพราะกระบวนการ Transcription และ Translation เกิดขึ้นพร้อมกันในไซโทพลาซึม", "เพราะ mRNA ของแบคทีเรียมีอายุยาวนาน (Long-lived)", "เพราะมีการสร้าง mRNA ในนิวเคลียสและส่งออกอย่างรวดเร็ว", "เพราะมีการเติม 5' cap ป้องกันการทำลาย"], ans: 0, reason: "แบคทีเรียไม่มีนิวเคลียส (Prokaryote) กระบวนการถอดรหัสและแปลรหัสจึงสามารถเกิดไปพร้อมๆ กันได้ (Coupled transcription/translation) ทำให้ตอบสนองได้ไวมาก" },
+            { q: "ยาปฏิชีวนะที่ยับยั้งการสร้างโปรตีนของแบคทีเรีย มักจะมุ่งเป้าไปที่โครงสร้างใดที่แตกต่างจากเซลล์มนุษย์?", options: ["ไรโบโซม 80S", "เอนไซม์ 1,3-beta-D-glucan synthase", "ไรโบโซมหน่วยย่อย 30S และ 50S", "DNA gyrase"], ans: 2, reason: "แบคทีเรียมีไรโบโซมขนาด 70S (ประกอบจาก 30S และ 50S) ซึ่งต่างจากเซลล์มนุษย์ที่เป็น 80S ยาจึงไม่ทำลายเซลล์ร่างกายเรา" },
+            { q: "การตรวจหา Antibody (Serological test) มักให้ผลลบลวง (False negative) หากเจาะเลือดตรวจในวันแรกที่มีอาการไข้ เพราะเหตุใด?", options: ["Antibody ถูกทำลายด้วยความร้อนของไข้", "ร่างกายของ Host ต้องใช้เวลา 7-14 วัน ในการสร้างภูมิคุ้มกัน (Antibody) ขึ้นมาในระดับที่ตรวจพบได้", "เชื้อแบคทีเรียทำลาย Antibody ทันที", "Antibody ไปจับกับยาปฏิชีวนะแทน"], ans: 1, reason: "การตรวจทางภูมิคุ้มกันวิทยา (Serology) มีข้อจำกัดคือต้องรอ Window period 7-14 วัน เพื่อให้ร่างกายสร้าง Antibody" },
+            { q: "ความแตกต่างในการเลือกใช้ยา Broad-spectrum กับ Narrow-spectrum ต่อแบคทีเรียแกรมลบคืออะไร?", options: ["Narrow-spectrum ทำลาย Lipid A ได้ดีกว่า", "Narrow-spectrum มักมีลักษณะ Hydrophobic ยาจึงผ่านเข้า Outer membrane ของแกรมลบไม่ได้", "Broad-spectrum มีขนาดใหญ่และทำลายเซลล์เมมเบรนโดยตรง", "ทั้งสองกลุ่มยับยั้งไรโบโซมได้เท่ากัน"], ans: 1, reason: "ยา Narrow-spectrum มักมีขนาดเทอะทะและเป็น Hydrophobic (ไม่ชอบน้ำ) จึงลอดผ่านช่อง Porin ของ Outer membrane ของแบคทีเรียแกรมลบไม่ได้" },
+            { q: "แบคทีเรียกลุ่ม Archaebacteria มีความสำคัญทางการแพทย์ในลักษณะใด?", options: ["เป็นสาเหตุหลักของการติดเชื้อในโรงพยาบาลรุนแรง", "ไม่มี Peptidoglycan แต่มีโปรตีนผสมโพลีแซคคาไรด์ ดื้อยาหลายชนิด แต่โชคดีที่ไม่ก่อโรค", "ก่อโรค Septic shock ได้รุนแรงสุด", "ถูกทำลายได้ง่ายด้วย Penicillin"], ans: 1, reason: "Archaebacteria มีสรีรวิทยาและผนังเซลล์ต่างออกไป จึงดื้อต่อยาฆ่าเชื้อหลายตัว แต่โชคดีที่กลุ่มนี้ไม่ก่อโรค (No pathogens) และเป็นแค่ Normal flora" },
+            { q: "เพราะเหตุใด ยาต้านเชื้อรา (Antifungal drugs) จึงมีเป้าหมายจำกัด และต้องพุ่งเป้าไปที่โครงสร้างอย่าง 1,3-beta-D-glucan synthase?", options: ["เพื่อให้ยาละลายน้ำได้ดีขึ้น", "เพราะเชื้อราเป็น Eukaryote เหมือนเซลล์มนุษย์ การพุ่งเป้าไปที่ผนังเซลล์ที่เซลล์มนุษย์ไม่มี จะช่วยลดความเป็นพิษต่อร่างกาย", "เพื่อทำลายแคปซูลของเชื้อราโดยเฉพาะ", "เพราะเชื้อราไม่มีนิวเคลียส"], ans: 1, reason: "เชื้อราและมนุษย์ต่างเป็น Eukaryote ทำให้มียาหลายตัวที่เป็นพิษต่อตับ/ไตมนุษย์ การพัฒนายาที่โจมตี 'ผนังเซลล์' (ซึ่งมนุษย์ไม่มี) จึงเป็นการรักษาที่ปลอดภัยกว่า" }
+        ]
+    };
+
+    let currentQuestions = [];
+    let userAnswers = [];
+
+    function startQuiz() {
+        const level = document.getElementById('level-select').value;
+        currentQuestions = quizData[level];
+        userAnswers = new Array(currentQuestions.length).fill(null);
+
+        const levelText = document.getElementById('level-select').options[document.getElementById('level-select').selectedIndex].text;
+        document.getElementById('quiz-title').innerText = levelText;
+
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('quiz-section').classList.remove('hidden');
+        document.getElementById('submit-btn').classList.remove('hidden');
+
+        renderQuestions();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        currentQuestions.forEach((qObj, qIndex) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'bg-gray-50 p-6 rounded-xl mb-6 border-l-4 border-blue-400 shadow-sm';
+            
+            let optionsHTML = '';
+            qObj.options.forEach((opt, oIndex) => {
+                optionsHTML += `
+                    <label id="label-q${qIndex}-o${oIndex}" class="block p-4 mb-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-150">
+                        <input type="radio" name="q${qIndex}" value="${oIndex}" class="mr-3 transform scale-125 accent-blue-600" onchange="selectAnswer(${qIndex}, ${oIndex})">
+                        <span class="text-lg text-gray-700">${opt}</span>
+                    </label>
+                `;
+            });
+
+            qDiv.innerHTML = `
+                <h3 class="text-xl font-bold mb-4 text-gray-800"><span class="text-blue-600">ข้อ ${qIndex + 1}:</span> ${qObj.q}</h3>
+                <div class="options-container">${optionsHTML}</div>
+                <div id="expl-q${qIndex}" class="explanation">
+                    <strong class="text-blue-700">💡 คำอธิบาย:</strong> ${qObj.reason}
+                </div>
+            `;
+            container.appendChild(qDiv);
+        });
+    }
+
+    function selectAnswer(qIndex, oIndex) {
+        userAnswers[qIndex] = oIndex;
+    }
+
+    function submitQuiz() {
+        if (userAnswers.includes(null)) {
+            alert("กรุณาตอบคำถามให้ครบทุกข้อก่อนส่งคำตอบครับ 🚨");
+            return;
+        }
 
         let score = 0;
-        let total = Object.keys(answers).length;
-        const formData = new FormData(document.getElementById('quizForm'));
 
-        // ตรวจคะแนน
-        for (let [question, correct] of Object.entries(answers)) {
-            if (formData.get(question) === correct) score++;
-        }
+        currentQuestions.forEach((qObj, qIndex) => {
+            const selected = userAnswers[qIndex];
+            const correct = qObj.ans;
 
+            // ล็อกตัวเลือกทั้งหมด
+            const radios = document.getElementsByName(`q${qIndex}`);
+            radios.forEach(radio => radio.disabled = true);
+
+            // ไฮไลต์สี
+            if (selected === correct) {
+                score++;
+                document.getElementById(`label-q${qIndex}-o${selected}`).classList.add('correct-ans');
+            } else {
+                document.getElementById(`label-q${qIndex}-o${selected}`).classList.add('wrong-ans');
+                document.getElementById(`label-q${qIndex}-o${correct}`).classList.add('correct-ans');
+            }
+
+            // แสดงคำอธิบาย
+            document.getElementById(`expl-q${qIndex}`).style.display = 'block';
+        });
+
+        document.getElementById('submit-btn').classList.add('hidden');
+        
         const resultBox = document.getElementById('result-box');
-        resultBox.style.display = 'block';
-        
-        let percentage = (score / total) * 100;
-        let message = `<strong>ผลการทดสอบของคุณ: ${score} / ${total} คะแนน (${percentage.toFixed(0)}%)</strong><br><br>`;
-        
-        if (score >= 13) {
-            resultBox.className = 'score-excellent';
-            message += "🏆 <strong>ยอดเยี่ยมมาก (Excellent)!</strong><br>ความรู้พื้นฐานและ Clinical correlation ของคุณแม่นยำมาก คุณพร้อมสำหรับการสอบ Final และการขึ้นวอร์ดแล้วครับ!";
-        } else if (score >= 9) {
-            resultBox.className = 'score-good';
-            message += "👍 <strong>เกณฑ์ดี (Good Job)!</strong><br>คุณเข้าใจคอนเซปต์หลักได้ดี แต่อาจจะต้องทบทวนเรื่องกลไกยาหรือความแตกต่างของแบคทีเรียแกรมบวก/ลบอีกนิด สู้ๆ ครับ!";
+        resultBox.classList.remove('hidden');
+        document.getElementById('restart-btn').classList.remove('hidden');
+
+        let msg = "";
+        let bgColor = "";
+        if (score >= 8) {
+            msg = "🏆 ยอดเยี่ยมมาก! ความรู้แม่นยำ พร้อมลุยข้อสอบ Final แล้ว";
+            bgColor = "bg-green-100 border-2 border-green-400 text-green-800";
+        } else if (score >= 5) {
+            msg = "👍 ทำได้ดีครับ! แต่ลองอ่านคำอธิบายในข้อที่ผิดเพื่อเสริมความเข้าใจนะ";
+            bgColor = "bg-yellow-100 border-2 border-yellow-400 text-yellow-800";
         } else {
-            resultBox.className = 'score-needs-work';
-            message += "📚 <strong>ต้องทบทวนเพิ่ม (Needs Review)</strong><br>ข้อสอบชุดนี้เน้นการวิเคราะห์ทางคลินิก อย่าเพิ่งท้อนะครับ! ลองกลับไปอ่านความแตกต่างของเซลล์ และกลไกของผนังเซลล์ใหม่อีกรอบ ทำได้แน่นอน!";
+            msg = "📚 ไม่เป็นไรครับ! แนวข้อสอบนี้ค่อนข้างลึก ลองอ่านคำเฉลยรับรองว่าทำได้แน่นอน";
+            bgColor = "bg-red-100 border-2 border-red-400 text-red-800";
         }
 
-        resultBox.innerHTML = message;
+        resultBox.className = `mt-8 text-center p-6 rounded-xl text-xl font-bold ${bgColor}`;
+        resultBox.innerHTML = `คุณทำคะแนนได้: ${score} / 10<br><span class="text-base font-normal mt-2 block">${msg}</span>`;
         
-        // เลื่อนหน้าจอลงมาที่กล่องผลลัพธ์
+        // เลื่อนหน้าจอขึ้นไปดูผล
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 </script>
