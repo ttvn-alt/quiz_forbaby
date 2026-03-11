@@ -10,8 +10,12 @@
         body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; color: #333; }
         .correct-ans { background-color: #d4edda !important; border-color: #c3e6cb !important; color: #155724; font-weight: bold; }
         .wrong-ans { background-color: #f8d7da !important; border-color: #f5c6cb !important; color: #721c24; text-decoration: line-through; }
-        .explanation { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 12px; margin-top: 10px; border-radius: 4px; font-size: 0.95rem; color: #2c3e50; display: none; }
+        .explanation { background-color: #e8f4f8; border-left: 4px solid #3498db; padding: 12px; margin-top: 10px; border-radius: 4px; font-size: 0.95rem; color: #2c3e50; display: none; line-height: 1.6; }
         input[type="radio"]:disabled { cursor: not-allowed; }
+        
+        /* Animation สำหรับปุ่ม */
+        .btn-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -26,20 +30,21 @@
         <div class="mb-6">
             <label class="block text-gray-700 font-bold mb-2 text-lg">📚 เลือกวิชา:</label>
             <select id="subject-select" class="w-full border-2 border-gray-200 rounded-lg p-3 text-lg focus:border-blue-500 outline-none">
-                <option value="micro">Microbiology (จุลชีววิทยา)</option>
+                <option value="micro">Microbiology (จุลชีววิทยาประยุกต์คลินิก)</option>
             </select>
         </div>
 
         <div class="mb-8">
-            <label class="block text-gray-700 font-bold mb-2 text-lg">⚡ เลือกระดับความยาก (10 ข้อ):</label>
+            <label class="block text-gray-700 font-bold mb-2 text-lg">⚡ เลือกระดับความยาก (ระดับละ 10 ข้อ):</label>
             <select id="level-select" class="w-full border-2 border-gray-200 rounded-lg p-3 text-lg focus:border-blue-500 outline-none">
                 <option value="easy">🟢 ระดับง่าย (Easy - ทบทวนความจำพื้นฐาน)</option>
                 <option value="medium">🟡 ระดับปานกลาง (Medium - เข้าใจกลไกและกระบวนการ)</option>
-                <option value="hard">🔴 ระดับโคตรยาก (Super Hard - ประยุกต์คลินิกและเก็งข้อสอบ)</option>
+                <option value="hard">🔴 ระดับยาก (Hard - ประยุกต์คลินิกเบื้องต้น)</option>
+                <option value="expert" class="font-bold text-red-600">🔥 ระดับปรมาจารย์ (Expert - พยาบาลเฉพาะทาง / โคตรยาก!)</option>
             </select>
         </div>
 
-        <button onclick="startQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-xl transition duration-200 shadow-lg">
+        <button onclick="startQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-xl btn-hover shadow-lg">
             เริ่มทำแบบทดสอบ 🚀
         </button>
     </div>
@@ -52,56 +57,68 @@
 
         <div id="questions-container"></div>
 
-        <button id="submit-btn" onclick="submitQuiz()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition duration-200 shadow-lg mt-8 hidden">
+        <button id="submit-btn" onclick="submitQuiz()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl btn-hover shadow-lg mt-8 hidden">
             ส่งคำตอบและดูผลคะแนน ✅
         </button>
 
         <div id="result-box" class="mt-8 text-center p-6 rounded-xl hidden"></div>
         
-        <button id="restart-btn" onclick="location.reload()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-lg transition duration-200 mt-4 hidden">
-            🔄 กลับไปหน้าเริ่มต้น
+        <button id="restart-btn" onclick="location.reload()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 rounded-xl text-lg btn-hover mt-4 hidden">
+            🔄 เลือกทดสอบระดับอื่น
         </button>
     </div>
 </div>
 
 <script>
-    // ฐานข้อมูลข้อสอบ
+    // ฐานข้อมูลข้อสอบ (เพิ่มระดับ Expert แล้ว)
     const quizData = {
         easy: [
-            { q: "แบคทีเรียจัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Virus", "Prion"], ans: 0, reason: "แบคทีเรียไม่มีเยื่อหุ้มนิวเคลียส (No nuclear membrane) และไม่มีออร์แกเนลล์ที่มีเยื่อหุ้ม จึงจัดเป็น Prokaryote" },
-            { q: "เชื้อรา (Fungi) จัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Acellular", "Archaea"], ans: 1, reason: "เชื้อราเป็นสิ่งมีชีวิตที่มีเยื่อหุ้มนิวเคลียส (True nucleus) และออร์แกเนลล์ จัดเป็น Eukaryote" },
-            { q: "โครงสร้างหลักที่พบในผนังเซลล์ของแบคทีเรียคืออะไร?", options: ["Chitin", "Cellulose", "Peptidoglycan", "Beta-glucan"], ans: 2, reason: "ผนังเซลล์ของแบคทีเรีย (Cell wall) ประกอบด้วยสาร Peptidoglycan เป็นหลัก" },
-            { q: "แบคทีเรียแกรมบวก (Gram positive) มีลักษณะผนังเซลล์อย่างไร?", options: ["ชั้น Peptidoglycan บาง", "ชั้น Peptidoglycan หนา", "ไม่มี Peptidoglycan", "มี Outer membrane"], ans: 1, reason: "แบคทีเรียแกรมบวกมีชั้น Peptidoglycan ที่หนามาก ทำให้ย้อมติดสีม่วง (Crystal violet)" },
-            { q: "แบคทีเรียชนิดใด 'ไม่มีผนังเซลล์'?", options: ["E. coli", "Mycoplasma", "Candida", "Staphylococcus"], ans: 1, reason: "Mycoplasma เป็นแบคทีเรียกลุ่ม Atypical ที่ไม่มีผนังเซลล์ (No wall) ทำให้ยาที่ทำลายผนังเซลล์ใช้ไม่ได้ผล" },
-            { q: "ผนังเซลล์ของเชื้อรา (Fungi) ประกอบด้วยสารใดเป็นหลัก?", options: ["Peptidoglycan", "Teichoic acid", "Lipid A", "Beta-1,3-D-glucan"], ans: 3, reason: "เซลล์ของเชื้อรามีผนังเซลล์ที่ประกอบด้วย Beta-1,3-D-glucan, Chitin หรือ Cellulose" },
-            { q: "โครงสร้างใดของแบคทีเรียมี DNA รูปวงแหวนที่อยู่นอกโครโมโซมหลัก?", options: ["Nucleolus", "Plasmid", "Ribosome", "Mitochondria"], ans: 1, reason: "Plasmid คือ Extrachromosomal DNA รูปวงแหวนของแบคทีเรีย ซึ่งมักมียีนดื้อยาอยู่" },
-            { q: "กระบวนการแบ่งเซลล์ของแบคทีเรียเรียกว่าอะไร?", options: ["Mitosis", "Meiosis", "Binary fission", "Budding"], ans: 2, reason: "แบคทีเรียเพิ่มจำนวนโดยการแบ่งเซลล์แบบ Binary fission" },
-            { q: "วิธีใดมีประสิทธิภาพที่สุดในการกำจัด 'สปอร์' ของเชื้อบนมือ?", options: ["เช็ดด้วยแอลกอฮอล์ 70%", "ล้างมือด้วยสบู่ให้นานพอ", "เช็ดด้วยน้ำเกลือ", "สเปรย์น้ำร้อน"], ans: 1, reason: "สปอร์ทนทานต่อแอลกอฮอล์ ต้องใช้วิธีล้างมือด้วยสบู่ (Handwashing) ให้นานเพียงพอเพื่อให้สปอร์หลุดออกไป" },
-            { q: "ปัจจุบันมีวัคซีนที่ใช้ป้องกัน 'เชื้อรา' (Fungi) หรือไม่?", options: ["มีเฉพาะเชื้อราทางผิวหนัง", "มีครบทุกชนิด", "ยังไม่มีวัคซีนสำหรับเชื้อรา", "มีเฉพาะในเด็ก"], ans: 2, reason: "ปัจจุบันมีวัคซีนป้องกันแบคทีเรียบางชนิด แต่ยังไม่มีวัคซีนสำหรับเชื้อรา (Eukaryotes) เลย" }
+            { q: "แบคทีเรียจัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Virus", "Prion"], ans: 0, reason: "แบคทีเรียไม่มีเยื่อหุ้มนิวเคลียส (No nuclear membrane) และไม่มีออร์แกเนลล์ที่มีเยื่อหุ้ม จึงจัดเป็น Prokaryote [cite: 14]" },
+            { q: "เชื้อรา (Fungi) จัดเป็นเซลล์ประเภทใด?", options: ["Prokaryote", "Eukaryote", "Acellular", "Archaea"], ans: 1, reason: "เชื้อราเป็นสิ่งมีชีวิตที่มีเยื่อหุ้มนิวเคลียสและออร์แกเนลล์ จัดเป็น Eukaryote [cite: 18]" },
+            { q: "โครงสร้างหลักที่พบในผนังเซลล์ของแบคทีเรียคืออะไร?", options: ["Chitin", "Cellulose", "Peptidoglycan", "Beta-glucan"], ans: 2, reason: "ผนังเซลล์ของแบคทีเรีย (Cell wall) ประกอบด้วยสาร Peptidoglycan เป็นหลัก [cite: 6]" },
+            { q: "แบคทีเรียแกรมบวก (Gram positive) มีลักษณะผนังเซลล์อย่างไร?", options: ["ชั้น Peptidoglycan บาง", "ชั้น Peptidoglycan หนา", "ไม่มี Peptidoglycan", "มี Outer membrane"], ans: 1, reason: "แบคทีเรียแกรมบวกมีชั้น Peptidoglycan ที่หนามาก (Thick peptidoglycan) [cite: 6]" },
+            { q: "แบคทีเรียชนิดใด 'ไม่มีผนังเซลล์'?", options: ["E. coli", "Mycoplasma", "Candida", "Staphylococcus"], ans: 1, reason: "Mycoplasma เป็นแบคทีเรียกลุ่ม Atypical ที่ไม่มีผนังเซลล์ (No wall) ทำให้รูปร่างไม่แน่นอน [cite: 33]" },
+            { q: "ผนังเซลล์ของเชื้อรา (Fungi) ประกอบด้วยสารใดเป็นหลัก?", options: ["Peptidoglycan", "Teichoic acid", "Lipid A", "Beta-1,3-D-glucan"], ans: 3, reason: "เซลล์ของเชื้อรามีผนังเซลล์ที่ประกอบด้วย Beta-1,3-D-glucan ซึ่งเป็นเป้าหมายของยาต้านเชื้อรา [cite: 83]" },
+            { q: "โครงสร้างใดของแบคทีเรียมี DNA รูปวงแหวนที่อยู่นอกโครโมโซมหลัก?", options: ["Nucleolus", "Plasmid", "Ribosome", "Mitochondria"], ans: 1, reason: "Plasmid คือ Circular DNA ที่อยู่นอกโครโมโซมของแบคทีเรีย [cite: 13]" },
+            { q: "การจำลอง DNA ของแบคทีเรียเกิดจากจุดเริ่มต้น (Origin) กี่จุด?", options: ["1 จุด", "2 จุด", "หลายจุด (Multiple)", "ไม่มีจุดเริ่มต้น"], ans: 0, reason: "แบคทีเรียมีจุดเริ่มต้นการจำลอง DNA เพียง 1 จุด (Origin of replication) ผิดกับเชื้อราที่มีหลายจุด [cite: 88, 90]" },
+            { q: "วิธีใดมีประสิทธิภาพที่สุดในการกำจัด 'สปอร์' ของเชื้อบนมือ?", options: ["เช็ดด้วยแอลกอฮอล์ 70%", "ล้างมือด้วยสบู่ให้นานพอ", "เช็ดด้วยน้ำเกลือ", "สเปรย์น้ำร้อน"], ans: 1, reason: "สปอร์ทนทานต่อแอลกอฮอล์ (Alcohol not work) ต้องใช้วิธีล้างมือด้วยสบู่ให้นานเพียงพอ [cite: 118]" },
+            { q: "ปัจจุบันมีวัคซีนที่ใช้ป้องกัน 'เชื้อรา' (Fungi) หรือไม่?", options: ["มีเฉพาะเชื้อราทางผิวหนัง", "มีครบทุกชนิด", "ยังไม่มีวัคซีนสำหรับเชื้อรา", "มีเฉพาะในเด็ก"], ans: 2, reason: "ปัจจุบันมีวัคซีนป้องกันแบคทีเรียบางชนิด แต่ยังไม่มีวัคซีนสำหรับเชื้อรา (No vaccine yet for fungi) [cite: 119]" }
         ],
         medium: [
-            { q: "ส่วนใดของ Lipopolysaccharide (LPS) ในแบคทีเรียแกรมลบที่ทำหน้าที่เป็นสารพิษ Endotoxin?", options: ["O-antigen", "Core polysaccharide", "Lipid A", "Teichoic acid"], ans: 2, reason: "Lipid A เป็นส่วนประกอบของ LPS ที่ทำหน้าที่เป็น Endotoxin กระตุ้นภูมิคุ้มกันให้เกิดไข้หรือช็อกได้" },
-            { q: "ยาต้านเชื้อรากลุ่ม Echinocandins ออกฤทธิ์ยับยั้งเป้าหมายใด?", options: ["ไรโบโซม 30S", "เอนไซม์ 1,3-beta-D-glucan synthase", "DNA polymerase", "การสร้างโปรตีน"], ans: 1, reason: "ยา Echinocandins ยับยั้งเอนไซม์ 1,3-beta-D-glucan synthase ทำให้เชื้อราสร้างผนังเซลล์ไม่ได้และเซลล์แตกตาย" },
-            { q: "mRNA ของแบคทีเรียมีลักษณะเฉพาะตามข้อใด?", options: ["เป็นแบบ Monocistronic", "ต้องมีการตัดแต่ง (Splicing) ก่อนแปลรหัส", "เป็นแบบ Polycistronic (1 mRNA ถอดรหัสได้หลายยีน)", "มีอายุการใช้งานนานมาก"], ans: 2, reason: "แบคทีเรียมี mRNA แบบ Polycistronic คือสร้างเส้นเดียวแต่มีข้อมูลของโปรตีนหลายชนิด และไม่มีการทำ mRNA processing" },
-            { q: "โครงสร้างใดที่พบในผนังเซลล์แบคทีเรียแกรมบวกและมีประจุลบ?", options: ["Outer membrane", "Teichoic acid", "Porin", "Lipoprotein"], ans: 1, reason: "Teichoic acid พบเฉพาะในแกรมบวก เป็นประจุลบช่วยดึงดูดไอออนและควบคุมเอนไซม์ Autolysin" },
-            { q: "ทำไมยาปฏิชีวนะกลุ่ม Broad-spectrum จึงสามารถผ่าน Outer membrane ของแบคทีเรียแกรมลบได้ดีกว่า?", options: ["เพราะยามีคุณสมบัติชอบไขมัน (Hydrophobic)", "เพราะยาทำลาย Lipid A", "เพราะยามีคุณสมบัติชอบน้ำ (Hydrophilic) และผ่านรู Porin ได้", "เพราะยามีขนาดใหญ่"], ans: 2, reason: "ยา Broad-spectrum มักเป็น Hydrophilic และมีขนาดพอเหมาะที่จะลอดผ่านรู (Pore/Porin) บน Outer membrane ของแกรมลบได้" },
-            { q: "การจำลอง DNA (Replication) ของแบคทีเรีย แตกต่างจากเชื้อราในข้อใด?", options: ["แบคทีเรียมีจุดเริ่มต้นหลายจุด", "แบคทีเรียมีจุดเริ่มต้น (origin) เพียง 1 จุด", "เชื้อราจำลองได้เร็วกว่า", "เชื้อราไม่มี origin"], ans: 1, reason: "แบคทีเรียมี DNA แบบวงแหวนและมี Origin of replication เพียง 1 จุด (เชื้อรามีหลายจุด)" },
-            { q: "กระบวนการ Transcription (ถอดรหัส) ของเชื้อราเกิดขึ้นที่บริเวณใด?", options: ["ไซโทพลาซึม", "นิวเคลียส", "ผนังเซลล์", "ไรโบโซม"], ans: 1, reason: "เชื้อราเป็น Eukaryote มีนิวเคลียส กระบวนการ Transcription จึงเกิดขึ้นภายในนิวเคลียส (ต่างจากแบคทีเรียที่เกิดในไซโทพลาซึม)" },
-            { q: "หากต้องการทราบผลการติดเชื้อภายในเวลา 'ไม่กี่ชั่วโมง' ควรใช้วิธีใด?", options: ["ตรวจหาระดับ Antibody", "เพาะเชื้อบนอาหารแข็ง (Culture)", "ตรวจหาสารพันธุกรรม (Nucleic acid / PCR)", "ตรวจหา Cytokine"], ans: 2, reason: "PCR (Nucleic acid detection) สามารถทราบผลได้ในเวลาเป็นชั่วโมง ขณะที่ Culture หรือรอ Antibody ต้องใช้เวลาเป็นวัน" },
-            { q: "การรายงานผลเพาะเชื้อจากสิ่งส่งตรวจบน Agar plate นับจำนวนในหน่วยใด?", options: ["PFU", "CFU (Colony forming unit)", "Cells/ml", "OD"], ans: 1, reason: "โคโลนีของแบคทีเรียที่เจริญบนอาหารแข็ง จะถูกนับเป็นหน่วย CFU" },
-            { q: "แบคทีเรีย Mycoplasma pneumoniae ทำให้เกิดโรคใดและมีลักษณะพิเศษอย่างไร?", options: ["โรคปอดบวมเดินได้ (Walking pneumonia) และไม่มีผนังเซลล์", "โรควัณโรค และมีผนังเซลล์หนา", "โรคติดเชื้อในกระแสเลือด และมี LPS", "โรคอาหารเป็นพิษ และมีสปอร์"], ans: 0, reason: "Mycoplasma ก่อโรค Walking pneumonia และลักษณะสำคัญคือ ไม่มีผนังเซลล์ (No cell wall) จึงไม่ติดสีแกรม" }
+            { q: "ส่วนใดของ Lipopolysaccharide (LPS) ในแบคทีเรียแกรมลบที่ทำหน้าที่เป็นสารพิษ Endotoxin?", options: ["O-antigen", "Core polysaccharide", "Lipid A", "Teichoic acid"], ans: 2, reason: "Lipid A เป็นส่วนประกอบของ LPS ที่ทำหน้าที่เป็น Endotoxin กระตุ้นภูมิคุ้มกันรุนแรงในกระแสเลือด [cite: 29]" },
+            { q: "ยาต้านเชื้อรากลุ่ม Echinocandins ออกฤทธิ์ยับยั้งเป้าหมายใด?", options: ["ไรโบโซม 30S", "เอนไซม์ 1,3-beta-D-glucan synthase", "DNA polymerase", "การสร้างโปรตีน"], ans: 1, reason: "ยา Echinocandins ยับยั้งเอนไซม์ 1,3-beta-D-glucan synthase ทำให้เชื้อราสร้างผนังเซลล์ไม่ได้ [cite: 83]" },
+            { q: "mRNA ของแบคทีเรียมีลักษณะเฉพาะตามข้อใด?", options: ["เป็นแบบ Monocistronic", "ต้องมีการตัดแต่ง (Splicing) ก่อนแปลรหัส", "เป็นแบบ Polycistronic", "มีอายุการใช้งานนานมาก"], ans: 2, reason: "แบคทีเรียมี mRNA แบบ Polycistronic และไม่มีการทำ mRNA processing (ตัดแต่งยีน) [cite: 99]" },
+            { q: "โครงสร้างใดที่พบในผนังเซลล์แบคทีเรียแกรมบวกและมีประจุลบ?", options: ["Outer membrane", "Teichoic acid", "Porin", "Lipoprotein"], ans: 1, reason: "Teichoic acid พบเฉพาะในแกรมบวก เป็นสารประจุลบที่ช่วยควบคุมการทำงานของเอนไซม์ Autolysin [cite: 63, 65]" },
+            { q: "ทำไมยาปฏิชีวนะกลุ่ม Broad-spectrum จึงสามารถผ่าน Outer membrane ของแบคทีเรียแกรมลบได้ดีกว่า Narrow-spectrum?", options: ["เพราะยามีคุณสมบัติชอบไขมัน (Hydrophobic)", "เพราะยาทำลาย Lipid A", "เพราะยามีคุณสมบัติชอบน้ำ (Hydrophilic) และมีขนาดพอผ่านรู Porin ได้", "เพราะยามีขนาดใหญ่กว่ารู Porin"], ans: 2, reason: "ยา Broad-spectrum มักเป็น Hydrophilic และสามารถลอดผ่านรู (Pore) บน Outer membrane ของแกรมลบได้ [cite: 25]" },
+            { q: "การถอดรหัส (Transcription) ของเชื้อราเกิดขึ้นที่บริเวณใด?", options: ["ไซโทพลาซึม", "นิวเคลียส", "ผนังเซลล์", "ไรโบโซม"], ans: 1, reason: "เชื้อราเป็น Eukaryote มีนิวเคลียสที่แท้จริง กระบวนการ Transcription จึงเกิดขึ้นภายในนิวเคลียส (Nucleus) [cite: 100]" },
+            { q: "หากต้องการทราบผลการติดเชื้อภายในเวลา 'ไม่กี่ชั่วโมง' ควรใช้วิธีใด?", options: ["ตรวจหาระดับ Antibody", "เพาะเชื้อบนอาหารแข็ง (Culture)", "ตรวจหาสารพันธุกรรม (Nucleic acid / PCR)", "ตรวจหา Cytokine"], ans: 2, reason: "PCR (Nucleic acid detection) สามารถทราบผลได้ภายในไม่กี่ชั่วโมง (Within hours after infection) [cite: 111]" },
+            { q: "การรายงานผลเพาะเชื้อจากสิ่งส่งตรวจบน Agar plate นับจำนวนในหน่วยใด?", options: ["PFU", "CFU (Colony forming unit)", "Cells/ml", "OD"], ans: 1, reason: "โคโลนีของแบคทีเรียที่เจริญบนอาหารแข็ง จะถูกนับเป็นหน่วย CFU (Colony forming unit) [cite: 115]" },
+            { q: "แบคทีเรีย Mycoplasma pneumoniae ทำให้เกิดโรคใดและมีลักษณะพิเศษอย่างไร?", options: ["โรคปอดบวมเดินได้ (Walking pneumonia) และไม่มีผนังเซลล์", "โรควัณโรค และมีผนังเซลล์หนา", "โรคติดเชื้อในกระแสเลือด และมี LPS", "โรคอาหารเป็นพิษ และมีสปอร์"], ans: 0, reason: "Mycoplasma ก่อโรค Walking pneumonia และลักษณะสำคัญคือ ไม่มีผนังเซลล์ (No wall) จึงไม่ตอบสนองต่อยาที่เป้าหมายคือผนังเซลล์ [cite: 33, 38]" },
+            { q: "ในกระบวนการจำลอง DNA เอนไซม์ของสิ่งมีชีวิตใดมีประสิทธิภาพการตรวจทาน (Proofreading) ดีกว่ากัน?", options: ["เชื้อรา", "ไวรัส", "แบคทีเรีย", "พรีออน"], ans: 2, reason: "แบคทีเรียมีอัตราการกลายพันธุ์ต่อรอบต่ำกว่าเพราะมีประสิทธิภาพการตรวจทาน (Proofreading ability) ของ DNA polymerase ที่ดีกว่า [cite: 91]" }
         ],
         hard: [
-            { q: "ผู้ป่วยติดเชื้อแกรมลบในกระแสเลือด (Septicemia) และเกิดภาวะช็อก อาการนี้เกี่ยวข้องกับกลไกใดของเชื้อโดยตรง?", options: ["เชื้อปล่อย Exotoxin ไปทำลายเซลล์เม็ดเลือดแดง", "Lipid A จาก LPS กระตุ้นระบบภูมิคุ้มกัน (Cytokine storm) อย่างรุนแรงเมื่อเซลล์แตก", "Teichoic acid ทำปฏิกิริยากับผนังหลอดเลือด", "เชื้อสร้างสปอร์อุดตันหลอดเลือด"], ans: 1, reason: "โครงสร้าง Lipid A (Endotoxin) ของแบคทีเรียแกรมลบ เมื่อเชื้อตายหรือแบ่งตัวจะถูกปล่อยออกมา กระตุ้นภูมิคุ้มกันจนเกิดภาวะ Septic shock" },
-            { q: "แพทย์จ่ายยา Penicillin ให้ผู้ป่วยที่ติดเชื้อ Mycoplasma ผลการรักษาจะเป็นอย่างไร?", options: ["หายเร็วขึ้นเพราะยาทำลายผนังเซลล์", "อาการแย่ลงเพราะยากระตุ้นสปอร์", "ไม่ได้ผล เพราะ Mycoplasma ไม่มี Peptidoglycan ที่เป็นเป้าหมายของยา", "ได้ผลดีเพราะยามุ่งเป้าที่โปรตีนภายใน"], ans: 2, reason: "ยา Penicillin จัดอยู่ในกลุ่ม Beta-lactam ที่ออกฤทธิ์ทำลายผนังเซลล์ แต่ Mycoplasma ไม่มีผนังเซลล์ ยาจึงไม่มีเป้าหมายให้ออกฤทธิ์" },
-            { q: "ในขั้นตอนการย้อมสีแกรม การใช้แอลกอฮอล์ (Alcohol) มีผลต่อแบคทีเรียแกรมลบอย่างไร?", options: ["ละลายชั้น Lipid (LPS) ทำให้สี Crystal violet หลุดออกจากชั้น Peptidoglycan ที่บาง", "ทำให้ชั้น Peptidoglycan หดตัวและกักเก็บสีไว้", "เปลี่ยนสี Crystal violet เป็นสีแดง", "ทำลายเยื่อหุ้มนิวเคลียส"], ans: 0, reason: "แอลกอฮอล์ทำหน้าที่เป็น Decolorizer ละลายชั้นไขมัน (Outer membrane) ของแกรมลบ สีม่วงจึงหลุดออก ทำให้ติดสีแดง Safranin ในตอนท้าย" },
-            { q: "เหตุใดแบคทีเรียจึงมี Mutation rate (อัตรากลายพันธุ์) 'ต่อรอบการจำลอง DNA' ต่ำกว่า แม้ว่าแบคทีเรียจะดื้อยาได้เร็ว?", options: ["แบคทีเรียมีการ Splicing แก้ไขยีน", "เอนไซม์ DNA polymerase ของแบคทีเรียมีความสามารถในการตรวจทาน (Proofreading) ที่ดีกว่า", "แบคทีเรียใช้เวลาแบ่งเซลล์นานมาก", "แบคทีเรียไม่มีเอนไซม์ RNA polymerase"], ans: 1, reason: "DNA polymerase ของแบคทีเรียมี Proofreading ที่ดีกว่าทำให้อัตรากลายพันธุ์ต่อรอบต่ำ แต่ที่ดื้อยาเร็วเพราะมันแบ่งตัวแบบก้าวกระโดด (Fast generation time)" },
-            { q: "กลไกใดที่ทำให้แบคทีเรียสามารถสร้างโปรตีนตอบสนองต่อสภาพแวดล้อมได้รวดเร็วกว่าเชื้อรา?", options: ["เพราะกระบวนการ Transcription และ Translation เกิดขึ้นพร้อมกันในไซโทพลาซึม", "เพราะ mRNA ของแบคทีเรียมีอายุยาวนาน (Long-lived)", "เพราะมีการสร้าง mRNA ในนิวเคลียสและส่งออกอย่างรวดเร็ว", "เพราะมีการเติม 5' cap ป้องกันการทำลาย"], ans: 0, reason: "แบคทีเรียไม่มีนิวเคลียส (Prokaryote) กระบวนการถอดรหัสและแปลรหัสจึงสามารถเกิดไปพร้อมๆ กันได้ (Coupled transcription/translation) ทำให้ตอบสนองได้ไวมาก" },
-            { q: "ยาปฏิชีวนะที่ยับยั้งการสร้างโปรตีนของแบคทีเรีย มักจะมุ่งเป้าไปที่โครงสร้างใดที่แตกต่างจากเซลล์มนุษย์?", options: ["ไรโบโซม 80S", "เอนไซม์ 1,3-beta-D-glucan synthase", "ไรโบโซมหน่วยย่อย 30S และ 50S", "DNA gyrase"], ans: 2, reason: "แบคทีเรียมีไรโบโซมขนาด 70S (ประกอบจาก 30S และ 50S) ซึ่งต่างจากเซลล์มนุษย์ที่เป็น 80S ยาจึงไม่ทำลายเซลล์ร่างกายเรา" },
-            { q: "การตรวจหา Antibody (Serological test) มักให้ผลลบลวง (False negative) หากเจาะเลือดตรวจในวันแรกที่มีอาการไข้ เพราะเหตุใด?", options: ["Antibody ถูกทำลายด้วยความร้อนของไข้", "ร่างกายของ Host ต้องใช้เวลา 7-14 วัน ในการสร้างภูมิคุ้มกัน (Antibody) ขึ้นมาในระดับที่ตรวจพบได้", "เชื้อแบคทีเรียทำลาย Antibody ทันที", "Antibody ไปจับกับยาปฏิชีวนะแทน"], ans: 1, reason: "การตรวจทางภูมิคุ้มกันวิทยา (Serology) มีข้อจำกัดคือต้องรอ Window period 7-14 วัน เพื่อให้ร่างกายสร้าง Antibody" },
-            { q: "ความแตกต่างในการเลือกใช้ยา Broad-spectrum กับ Narrow-spectrum ต่อแบคทีเรียแกรมลบคืออะไร?", options: ["Narrow-spectrum ทำลาย Lipid A ได้ดีกว่า", "Narrow-spectrum มักมีลักษณะ Hydrophobic ยาจึงผ่านเข้า Outer membrane ของแกรมลบไม่ได้", "Broad-spectrum มีขนาดใหญ่และทำลายเซลล์เมมเบรนโดยตรง", "ทั้งสองกลุ่มยับยั้งไรโบโซมได้เท่ากัน"], ans: 1, reason: "ยา Narrow-spectrum มักมีขนาดเทอะทะและเป็น Hydrophobic (ไม่ชอบน้ำ) จึงลอดผ่านช่อง Porin ของ Outer membrane ของแบคทีเรียแกรมลบไม่ได้" },
-            { q: "แบคทีเรียกลุ่ม Archaebacteria มีความสำคัญทางการแพทย์ในลักษณะใด?", options: ["เป็นสาเหตุหลักของการติดเชื้อในโรงพยาบาลรุนแรง", "ไม่มี Peptidoglycan แต่มีโปรตีนผสมโพลีแซคคาไรด์ ดื้อยาหลายชนิด แต่โชคดีที่ไม่ก่อโรค", "ก่อโรค Septic shock ได้รุนแรงสุด", "ถูกทำลายได้ง่ายด้วย Penicillin"], ans: 1, reason: "Archaebacteria มีสรีรวิทยาและผนังเซลล์ต่างออกไป จึงดื้อต่อยาฆ่าเชื้อหลายตัว แต่โชคดีที่กลุ่มนี้ไม่ก่อโรค (No pathogens) และเป็นแค่ Normal flora" },
-            { q: "เพราะเหตุใด ยาต้านเชื้อรา (Antifungal drugs) จึงมีเป้าหมายจำกัด และต้องพุ่งเป้าไปที่โครงสร้างอย่าง 1,3-beta-D-glucan synthase?", options: ["เพื่อให้ยาละลายน้ำได้ดีขึ้น", "เพราะเชื้อราเป็น Eukaryote เหมือนเซลล์มนุษย์ การพุ่งเป้าไปที่ผนังเซลล์ที่เซลล์มนุษย์ไม่มี จะช่วยลดความเป็นพิษต่อร่างกาย", "เพื่อทำลายแคปซูลของเชื้อราโดยเฉพาะ", "เพราะเชื้อราไม่มีนิวเคลียส"], ans: 1, reason: "เชื้อราและมนุษย์ต่างเป็น Eukaryote ทำให้มียาหลายตัวที่เป็นพิษต่อตับ/ไตมนุษย์ การพัฒนายาที่โจมตี 'ผนังเซลล์' (ซึ่งมนุษย์ไม่มี) จึงเป็นการรักษาที่ปลอดภัยกว่า" }
+            { q: "ผู้ป่วยติดเชื้อแกรมลบในกระแสเลือด และเกิดภาวะช็อก อาการนี้เกี่ยวข้องกับกลไกใดของเชื้อโดยตรง?", options: ["เชื้อปล่อย Exotoxin ไปทำลายเซลล์เม็ดเลือดแดง", "Lipid A จาก LPS กระตุ้นระบบภูมิคุ้มกันอย่างรุนแรงเมื่อเซลล์แตก", "Teichoic acid ทำปฏิกิริยากับผนังหลอดเลือด", "เชื้อสร้างสปอร์อุดตันหลอดเลือด"], ans: 1, reason: "โครงสร้าง Lipid A ซึ่งเป็น Endotoxin ของแบคทีเรียแกรมลบ เมื่อเข้าสู่กระแสเลือดจะกระตุ้นภูมิคุ้มกันจนเกิดภาวะ Septic shock [cite: 29]" },
+            { q: "แพทย์จ่ายยา Penicillin ให้ผู้ป่วยติดเชื้อ Mycoplasma ผลการรักษาจะเป็นอย่างไร?", options: ["หายเร็วขึ้นเพราะยาทำลายผนังเซลล์", "อาการแย่ลงเพราะยากระตุ้นสปอร์", "ไม่ได้ผล เพราะ Mycoplasma ไม่มี Peptidoglycan ที่เป็นเป้าหมายของยา", "ได้ผลดีเพราะยามุ่งเป้าที่โปรตีนภายใน"], ans: 2, reason: "ยา Beta-lactam ออกฤทธิ์ทำลายผนังเซลล์ (Peptidoglycan targeted) แต่ Mycoplasma ไม่มีผนังเซลล์ ยาจึงไม่มีผล [cite: 36]" },
+            { q: "ในขั้นตอนการย้อมสีแกรม การใช้แอลกอฮอล์ (Alcohol) มีผลต่อแบคทีเรียแกรมลบอย่างไร?", options: ["ละลายชั้น Lipid (LPS) และล้างสีออก", "ทำให้ชั้น Peptidoglycan หดตัวและกักเก็บสีไว้", "เปลี่ยนสี Crystal violet เป็นสีแดง", "ทำลายเยื่อหุ้มนิวเคลียส"], ans: 0, reason: "แอลกอฮอล์ทำหน้าที่เป็นตัวทำละลายไขมัน ไปละลายชั้น LPS (Outer membrane) ของแกรมลบ สีม่วงจึงหลุดออก [cite: 29]" },
+            { q: "เหตุใดแบคทีเรียจึงมี Mutation rate 'ต่อรอบการจำลอง DNA' ต่ำกว่า แต่กลับดื้อยาและกลายพันธุ์รวมเร็วกว่าเชื้อรา?", options: ["เพราะมีการ Splicing แก้ไขยีน", "เอนไซม์ DNA polymerase ของแบคทีเรียตรวจทาน (Proofreading) ดีกว่า แต่มันแบ่งเซลล์ได้เร็วกว่ามาก ทำให้เกิดรอบการจำลองสะสมสูงกว่า", "เพราะใช้เวลาแบ่งเซลล์นานมาก", "แบคทีเรียไม่มี DNA polymerase"], ans: 1, reason: "DNA polymerase ของแบคทีเรียมี Proofreading ที่ดีกว่า แต่ที่กลายพันธุ์และดื้อยาสะสมเร็วเพราะมันแบ่งตัวรวดเร็วมาก (grow much faster) [cite: 91]" },
+            { q: "กลไกใดที่ทำให้แบคทีเรียสร้างโปรตีนตอบสนองต่อสภาพแวดล้อมได้รวดเร็วกว่าเชื้อรา?", options: ["Transcription และ Translation เกิดขึ้นพร้อมกัน (Coupled) โดยไม่มีเยื่อหุ้มนิวเคลียสกั้น", "mRNA ของแบคทีเรียมีอายุยาวนาน", "มีการสร้าง mRNA ในนิวเคลียสและส่งออกรวดเร็ว", "มีการเติม 5' cap ป้องกันการทำลาย"], ans: 0, reason: "กระบวนการถอดรหัสและแปลรหัสของแบคทีเรียเกิดขึ้นต่อเนื่องกันทันที (Fast and efficiency - coupled translation) เพราะไม่มีนิวเคลียส [cite: 99]" },
+            { q: "การตรวจหา Antibody มักให้ผลลบลวง (False negative) หากเจาะเลือดตรวจในวันแรกที่มีอาการไข้ เพราะเหตุใด?", options: ["Antibody ถูกทำลายด้วยไข้", "ร่างกายของต้องใช้เวลา 7-14 วัน ในการสร้าง Antibody ขึ้นมาในระดับที่ตรวจพบได้", "แบคทีเรียทำลาย Antibody ทันที", "Antibody จับกับยารักษา"], ans: 1, reason: "การตรวจหาโปรตีนภูมิคุ้มกัน (Serological test) ต้องใช้เวลารอให้ร่างกายสร้างการตอบสนองประมาณ 7-14 วันหลังการติดเชื้อ [cite: 112]" },
+            { q: "ยา Broad-spectrum กับ Narrow-spectrum ต่อแบคทีเรียแกรมลบ แตกต่างกันอย่างไรในการผ่านผนังเซลล์?", options: ["Narrow ทำลาย Lipid A ได้ดีกว่า", "Narrow-spectrum มักมีลักษณะ Bulky/Hydrophobic จึงผ่านรู Porin ของแกรมลบไม่ได้", "Broad มีขนาดใหญ่ทำลายเซลล์เมมเบรน", "Broad ยับยั้งไรโบโซมได้ดีกว่า"], ans: 1, reason: "ยา Narrow-spectrum มักเทอะทะหรือเป็น Hydrophobic จึงลอดผ่านรู (pore) ของ Outer membrane แบคทีเรียแกรมลบไม่ได้ [cite: 25]" },
+            { q: "แบคทีเรียกลุ่ม Archaebacteria มีความสำคัญทางการแพทย์ในลักษณะใด?", options: ["เป็นสาเหตุหลักของการติดเชื้อในโรงพยาบาล", "ไม่มี Peptidoglycan แต่มีโปรตีนผสมโพลีแซคคาไรด์ ดื้อยาหลายชนิด แต่เป็นแค่เชื้อประจำถิ่น (Normal flora) ไม่ก่อโรค", "ก่อโรค Septic shock รุนแรง", "ถูกทำลายง่ายด้วย Penicillin"], ans: 1, reason: "Archaebacteria ดื้อต่อยาหลายตัวเพราะไม่มี Peptidoglycan (No peptidoglycan) แต่โชคดีที่ไม่ก่อโรค เป็นแค่ Normal flora (No pathogens but only normal flora) [cite: 40, 43]" },
+            { q: "ข้อใดเป็นลักษณะเฉพาะของ mRNA ในแบคทีเรีย (Bacteria)?", options: ["มีกระบวนการ Splicing", "มีอายุการใช้งานยาวนาน", "เป็นแบบ Polycistronic คือ 1 mRNA มีหลายยีน (Many genes per one mRNA)", "มีการเติม PolyA tail"], ans: 2, reason: "mRNA ของแบคทีเรียเป็นแบบ Polycistronic คือ 1 เส้น mRNA สามารถมีข้อมูลและถอดรหัสได้หลายยีน [cite: 99]" },
+            { q: "ความแตกต่างทางโครงสร้างใดเป็นเป้าหมายสำคัญที่ทำให้ยาต้านแบคทีเรีย (Beta-lactam) ไม่ทำลายเซลล์มนุษย์?", options: ["ความแตกต่างของไรโบโซม", "การที่แบคทีเรียมี Peptidoglycan ในผนังเซลล์ ซึ่งเป็นโครงสร้างที่เซลล์มนุษย์ไม่มี", "ความแตกต่างของไมโทคอนเดรีย", "การที่แบคทีเรียมีเยื่อหุ้มเซลล์ชั้นเดียว"], ans: 1, reason: "ยาต้านแบคทีเรียมุ่งเป้าทำลาย Peptidoglycan ในผนังเซลล์ของแบคทีเรีย ซึ่งในเซลล์ของมนุษย์ไม่มีโครงสร้างนี้ [cite: 36]" }
+        ],
+        expert: [
+            { q: "Lipid A บนผนังเซลล์แกรมลบเป็น Endotoxin ที่รุนแรง แต่ทำไมเชื้อแกรมลบที่เป็น Normal flora ในลำไส้จึงไม่ก่อให้เกิดภาวะ Septic shock?", options: ["เพราะเชื้อในลำไส้ปรับตัวจนไม่สร้าง Lipid A", "เพราะร่างกายมี Physical barrier, มีการลดการตอบสนองภูมิคุ้มกัน (Down regulation) และมีเอนไซม์ในลำไส้ช่วยกำจัดพิษ Lipid A", "เพราะเชื้อไม่สามารถสลายตัวและตายในลำไส้ได้", "เพราะ Lipid A จะกระตุ้นภูมิคุ้มกันได้ก็ต่อเมื่อเข้าสู่ระบบทางเดินหายใจเท่านั้น"], ans: 1, reason: "สไลด์ระบุชัดเจนว่าร่างกายทนทานต่อ LPS ของ normal flora ได้เพราะ 1) Physical barrier 2) Down regulation of immune response 3) เอนไซม์ในลำไส้ช่วย detoxify Lipid A [cite: 29]" },
+            { q: "ข้อจำกัดสำคัญทางเทคนิคของการย้อมสีแกรม (Gram stain) ในการวินิจฉัยเชื้อ Mycoplasma pneumoniae คืออะไร?", options: ["เชื้อจะติดสีแดงอย่างรุนแรงทำให้สับสนกับแบคทีเรียแกรมลบ", "เชื้อจะดื้อต่อสีย้อมและสลายตัวทันทีเมื่อโดนแอลกอฮอล์", "เชื้อไม่มีผนังเซลล์ (No cell wall) จึงไม่ปรากฏผลในการย้อมสีแกรม (Not show up in Gram stain)", "เชื้อมี Peptidoglycan หนาผิดปกติทำให้กักเก็บสีไม่ได้"], ans: 2, reason: "เชื้อ Mycoplasma ไม่มีผนังเซลล์ (No wall) ทำให้สารย้อมสีแกรมไม่สามารถเกาะติดได้ จึง 'Not show up in Gram stain' [cite: 33, 35]" },
+            { q: "เอนไซม์ DNA polymerase ของแบคทีเรียมีประสิทธิภาพในการตรวจทาน (Proofreading) ดีกว่าเชื้อรา แล้วเหตุใดโดยรวมแบคทีเรียจึงเกิดการกลายพันธุ์และดื้อยาได้รวดเร็วมากในทางคลินิก?", options: ["เพราะแบคทีเรียมีพลาสมิดที่ตั้งใจสร้างยีนกลายพันธุ์เพื่อหนียา", "เพราะแบคทีเรียเจริญเติบโตและแบ่งเซลล์รวดเร็วกว่ามาก (Grow much faster) ทำให้จำนวนรวมของการกลายพันธุ์สะสมในเวลาที่เท่ากันสูงกว่า", "เพราะแบคทีเรียไม่มีเยื่อหุ้มนิวเคลียส ยาปฏิชีวนะจึงไปรบกวนการทำสำเนาได้โดยตรง", "เพราะ RNA ของแบคทีเรียเป็นแบบ Polycistronic"], ans: 1, reason: "แม้อัตราการกลายพันธุ์ต่อรอบจะต่ำกว่า แต่แบคทีเรีย 'grow much faster' (เจริญเร็วกว่ามาก) ทำให้ยอดรวมการกลายพันธุ์สะสม (more mut for the same amount of time in total) สูงและเร็วกว่า [cite: 91]" },
+            { q: "การพัฒนายาปฏิชีวนะกลุ่ม Extended-Spectrum มีจุดประสงค์หลักทางสรีรวิทยาเพื่อก้าวข้ามกลไกการดื้อยาใดของแบคทีเรีย?", options: ["เพื่อเพิ่มความสามารถในการเจาะทะลุชั้น Outer membrane", "เพื่อปรับเปลี่ยนโครงสร้างให้ทนทานและต้านทานต่อเอนไซม์ Beta-lactamases ที่แบคทีเรียสร้างขึ้นมาทำลายยา", "เพื่อเปลี่ยนเป้าหมายการออกฤทธิ์ไปที่ DNA รูปวงแหวนแทนผนังเซลล์", "เพื่อทำให้ยาสามารถซึมผ่านระบบประสาทส่วนกลางของผู้ป่วยได้ดีขึ้น"], ans: 1, reason: "ยา Extended-Spectrum ถูกดัดแปลงโครงสร้างเพิ่มเติม (further modified) เพื่อให้รอดพ้นจากการถูกทำลายด้วยเอนไซม์ Beta-lactamases [cite: 26]" },
+            { q: "โครงสร้าง Teichoic acid ในแบคทีเรียแกรมบวก นอกจากจะมีประจุลบแล้ว ยังมีบทบาทสำคัญในการรักษาสมดุลระดับเซลล์อย่างไร?", options: ["ควบคุมเอนไซม์ Autolysin ไม่ให้ทำงานย่อยสลายผนังเซลล์มากเกินไป", "ควบคุมการเข้าออกของยาปฏิชีวนะกลุ่ม Broad-spectrum", "เป็นโครงสร้างหลักในการเชื่อมต่อกับแฟลเจลลา (Flagella)", "ควบคุมกระบวนการตัดแต่งยีน (Splicing)"], ans: 0, reason: "สไลด์ระบุว่า Teichoic acid เป็นประจุลบ และทำหน้าที่สำคัญในการควบคุมการทำงานของเอนไซม์ Autolysin ของเซลล์แบคทีเรีย [cite: 63, 65]" },
+            { q: "กระบวนการระดับโมเลกุลใดที่อธิบายคำว่า 'Fast and efficiency' ในการสังเคราะห์โปรตีนเพื่อตอบสนองต่อสภาพแวดล้อมของแบคทีเรีย?", options: ["มีกระบวนการตัดแต่ง mRNA แบบรวดเร็วพิเศษ", "กระบวนการถอดรหัสและแปลรหัสเกิดขึ้นเชื่อมต่อกันทันที (Coupled translation) เพราะไม่มีเยื่อหุ้มนิวเคลียสกั้น", "มีกระบวนการเติม 5' Cap ป้องกันการทำลาย mRNA", "มีเอนไซม์ DNA polymerase ที่สังเคราะห์โปรตีนได้โดยตรง"], ans: 1, reason: "แบคทีเรียไม่มีนิวเคลียส การทำงานของ Transcription และ Translation จึงเกิดต่อเนื่องกันทันที (Coupled) ส่งผลให้ตอบสนองได้ Fast and efficiency [cite: 99]" },
+            { q: "เพราะเหตุใด ยาปฏิชีวนะกลุ่ม Narrow-Spectrum จึงมักมีข้อจำกัดและไม่สามารถผ่านเข้าสู่เซลล์แบคทีเรียแกรมลบได้?", options: ["เพราะยาทำปฏิกิริยาสลายชั้น Peptidoglycan ทันทีที่สัมผัสผิวนอก", "เพราะยามีโครงสร้างเทอะทะและไม่ชอบน้ำ (Bulky or Hydrophobic) จึงลอดผ่านช่อง Porin ของ Outer membrane ไม่ได้", "เพราะยาถูกขับออกด้วยปั๊มรับน้ำเสียของเซลล์", "เพราะยาต้องการจับกับ O-antigen เท่านั้น"], ans: 1, reason: "ยา Narrow-Spectrum มักมีขนาด Bulky (เทอะทะ) หรือมีคุณสมบัติ Hydrophobic ทำให้ลอดผ่านช่อง 'pore' หรือ Porin บนเซลล์แกรมลบไม่ได้ [cite: 25]" },
+            { q: "ความแตกต่างทางพันธุศาสตร์ที่ชัดเจนของ 'mRNA ในเชื้อรา (Fungi)' เมื่อเปรียบเทียบกับแบคทีเรีย คือข้อใด?", options: ["mRNA เชื้อรามีกระบวนการตัดแต่ง (Splicing of introns) และเป็นแบบ 1 เส้น 1 ยีน (Monocistronic)", "mRNA เชื้อราถูกสร้างในไซโทพลาซึม", "mRNA เชื้อราไม่ต้องการการเติม PolyA tail", "mRNA เชื้อรามีอายุการใช้งานที่สั้นมาก (Short-lived)"], ans: 0, reason: "เชื้อราเป็น Eukaryote จึงมี mRNA แบบ Monocistronic และต้องผ่านกระบวนการ Splicing เพื่อตัด Introns รวมถึงมีการเติม Cap และ PolyA tail (ซึ่งแบคทีเรียไม่มี) [cite: 100]" },
+            { q: "โครงสร้าง 'O-antigen' ที่พบบนผนังเซลล์แบคทีเรียแกรมลบ มีประโยชน์อย่างไรในทางปฏิบัติการจุลชีววิทยาคลินิก?", options: ["เป็นตัวสร้างแคปซูลป้องกันการจับกินของเม็ดเลือดขาว", "ใช้เป็นปัจจัยสำคัญในการระบุและแยกแยะสายพันธุ์แบคทีเรีย (Distinguish bacteria)", "ทำหน้าที่กระตุ้นเอนไซม์ Beta-lactamase", "เป็นโครงสร้างที่ทำให้แบคทีเรียเคลื่อนที่ได้"], ans: 1, reason: "ส่วน O-antigen สามารถใช้เพื่อแยกแยะความแตกต่างของสายพันธุ์แบคทีเรีย (can be used to distinguish bact.) [cite: 29]" },
+            { q: "แบคทีเรียกลุ่ม Archaebacteria ดื้อต่อยาปฏิชีวนะส่วนใหญ่ (Resistant to many cases of antibiotics) สาเหตุหลักเกิดจากอะไร?", options: ["เพราะเชื้อสามารถหุ้มตัวเองด้วยสปอร์ที่หนาหลายชั้น", "เพราะสรีรวิทยาและผนังเซลล์ไม่ประกอบด้วย Peptidoglycan แต่เป็นโครงสร้างโปรตีน-โพลีแซคคาไรด์อื่น", "เพราะมีการแลกเปลี่ยนพลาสมิดดื้อยาตลอดเวลา", "เพราะมีอัตราการกลายพันธุ์ต่อรอบ (Mutation per round) สูงที่สุด"], ans: 1, reason: "Archaebacteria ดื้อต่อยาปฏิชีวนะทั่วไปเนื่องจากผนังเซลล์ไม่มี Peptidoglycan (No peptidoglycan) แต่เป็นโปรตีนผสมสารอื่นๆ [cite: 40, 42]" }
         ]
     };
 
@@ -114,13 +131,14 @@
         userAnswers = new Array(currentQuestions.length).fill(null);
 
         const levelText = document.getElementById('level-select').options[document.getElementById('level-select').selectedIndex].text;
-        document.getElementById('quiz-title').innerText = levelText;
+        document.getElementById('quiz-title').innerHTML = `<span class="${level === 'expert' ? 'text-red-600' : 'text-gray-800'}">${levelText}</span>`;
 
         document.getElementById('setup-section').classList.add('hidden');
         document.getElementById('quiz-section').classList.remove('hidden');
         document.getElementById('submit-btn').classList.remove('hidden');
 
         renderQuestions();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderQuestions() {
@@ -129,23 +147,27 @@
 
         currentQuestions.forEach((qObj, qIndex) => {
             const qDiv = document.createElement('div');
-            qDiv.className = 'bg-gray-50 p-6 rounded-xl mb-6 border-l-4 border-blue-400 shadow-sm';
+            // ไฮไลต์กล่องข้อสอบถ้าเป็นระดับ Expert
+            const borderColor = document.getElementById('level-select').value === 'expert' ? 'border-red-400' : 'border-blue-400';
+            const numColor = document.getElementById('level-select').value === 'expert' ? 'text-red-600' : 'text-blue-600';
+            
+            qDiv.className = `bg-gray-50 p-6 rounded-xl mb-6 border-l-4 ${borderColor} shadow-sm`;
             
             let optionsHTML = '';
             qObj.options.forEach((opt, oIndex) => {
                 optionsHTML += `
-                    <label id="label-q${qIndex}-o${oIndex}" class="block p-4 mb-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-150">
+                    <label id="label-q${qIndex}-o${oIndex}" class="block p-4 mb-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-blue-50 transition duration-150 relative">
                         <input type="radio" name="q${qIndex}" value="${oIndex}" class="mr-3 transform scale-125 accent-blue-600" onchange="selectAnswer(${qIndex}, ${oIndex})">
-                        <span class="text-lg text-gray-700">${opt}</span>
+                        <span class="text-lg text-gray-700 leading-relaxed">${opt}</span>
                     </label>
                 `;
             });
 
             qDiv.innerHTML = `
-                <h3 class="text-xl font-bold mb-4 text-gray-800"><span class="text-blue-600">ข้อ ${qIndex + 1}:</span> ${qObj.q}</h3>
+                <h3 class="text-xl font-bold mb-4 text-gray-800 leading-relaxed"><span class="${numColor}">ข้อ ${qIndex + 1}:</span> ${qObj.q}</h3>
                 <div class="options-container">${optionsHTML}</div>
                 <div id="expl-q${qIndex}" class="explanation">
-                    <strong class="text-blue-700">💡 คำอธิบาย:</strong> ${qObj.reason}
+                    <strong class="text-blue-700">💡 เฉลยและเหตุผล:</strong><br>${qObj.reason}
                 </div>
             `;
             container.appendChild(qDiv);
@@ -168,11 +190,9 @@
             const selected = userAnswers[qIndex];
             const correct = qObj.ans;
 
-            // ล็อกตัวเลือกทั้งหมด
             const radios = document.getElementsByName(`q${qIndex}`);
             radios.forEach(radio => radio.disabled = true);
 
-            // ไฮไลต์สี
             if (selected === correct) {
                 score++;
                 document.getElementById(`label-q${qIndex}-o${selected}`).classList.add('correct-ans');
@@ -181,8 +201,10 @@
                 document.getElementById(`label-q${qIndex}-o${correct}`).classList.add('correct-ans');
             }
 
-            // แสดงคำอธิบาย
-            document.getElementById(`expl-q${qIndex}`).style.display = 'block';
+            // ค่อยๆ โชว์เฉลยแบบมี Animation
+            const explBox = document.getElementById(`expl-q${qIndex}`);
+            explBox.style.display = 'block';
+            explBox.style.animation = "fadeIn 0.5s ease-in-out";
         });
 
         document.getElementById('submit-btn').classList.add('hidden');
@@ -191,23 +213,24 @@
         resultBox.classList.remove('hidden');
         document.getElementById('restart-btn').classList.remove('hidden');
 
+        const level = document.getElementById('level-select').value;
         let msg = "";
         let bgColor = "";
+        
         if (score >= 8) {
-            msg = "🏆 ยอดเยี่ยมมาก! ความรู้แม่นยำ พร้อมลุยข้อสอบ Final แล้ว";
+            msg = level === 'expert' ? "👑 ระดับเทพ (God Tier)! คุณคือพยาบาลตัวท็อปวิชา Microbiology!" : "🏆 ยอดเยี่ยมมาก! ความรู้แม่นยำ พร้อมลุยข้อสอบ Final แล้ว";
             bgColor = "bg-green-100 border-2 border-green-400 text-green-800";
         } else if (score >= 5) {
-            msg = "👍 ทำได้ดีครับ! แต่ลองอ่านคำอธิบายในข้อที่ผิดเพื่อเสริมความเข้าใจนะ";
+            msg = "👍 ทำได้ดีครับ! แต่ลองอ่านคำอธิบายในข้อที่ผิดเพื่อเสริมความเข้าใจแบบลึกซึ้งนะ";
             bgColor = "bg-yellow-100 border-2 border-yellow-400 text-yellow-800";
         } else {
-            msg = "📚 ไม่เป็นไรครับ! แนวข้อสอบนี้ค่อนข้างลึก ลองอ่านคำเฉลยรับรองว่าทำได้แน่นอน";
+            msg = level === 'expert' ? "🔥 ระดับนี้ข้อสอบปราบเซียนครับ ไม่แปลกที่จะพลาด ลองอ่านเฉลยให้เข้าใจรับรองว่าจะเก่งขึ้นแน่นอน!" : "📚 ไม่เป็นไรครับ! แนวข้อสอบนี้ค่อนข้างลึก ลองอ่านคำเฉลยรับรองว่าทำได้แน่นอน";
             bgColor = "bg-red-100 border-2 border-red-400 text-red-800";
         }
 
         resultBox.className = `mt-8 text-center p-6 rounded-xl text-xl font-bold ${bgColor}`;
         resultBox.innerHTML = `คุณทำคะแนนได้: ${score} / 10<br><span class="text-base font-normal mt-2 block">${msg}</span>`;
         
-        // เลื่อนหน้าจอขึ้นไปดูผล
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 </script>
