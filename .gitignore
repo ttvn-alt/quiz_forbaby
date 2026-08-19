@@ -1,0 +1,6 @@
+*.py
+*.js.bak
+*.txt
+parse_micro.js
+orig_question.js
+.DS_Store
