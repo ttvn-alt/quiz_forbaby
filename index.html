@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nursing & Law Quiz - คลังข้อสอบพยาบาลและกฎหมายทั่วไป</title>
+    <title>Nursing Portal - คลังข้อสอบพยาบาลพื้นฐาน กฎหมาย และจุลชีววิทยา</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -95,13 +95,13 @@
     <!-- Header Navigation -->
     <header class="mb-6 text-center">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium mb-3 backdrop-blur-md">
-            <span>✨ Nursing & Medical Law Examination Portal</span>
+            <span>✨ Nursing Student Examination Portal (Year 2 Final Exam Prep)</span>
         </div>
         <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-2">
-            🩺 คลังข้อสอบพยาบาล <span class="gradient-text-blue">&amp; กฎหมายทั่วไป</span>
+            🩺 คลังข้อสอบพยาบาลศาสตร์ <span class="gradient-text-blue">&amp; กฎหมายวิชาชีพ</span>
         </h1>
         <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto">
-            ระบบแบบทดสอบเตรียมสอบ Final &amp; สภาการพยาบาล (วิชา Microbiology และ กฎหมายทั่วไปและการพยาบาล)
+            เตรียมสอบปลายภาคและสอบสภาการพยาบาล: การพยาบาลพื้นฐาน, กฎหมายทั่วไป/วิชาชีพ และ จุลชีววิทยา
         </p>
     </header>
 
@@ -123,11 +123,12 @@
                     📚 เลือกรายวิชา:
                 </label>
                 <select id="subject-select" onchange="updateSubjectTheme()" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3.5 text-base font-semibold text-slate-800 focus:border-blue-500 focus:bg-white outline-none transition cursor-pointer shadow-sm">
-                    <option value="law" selected>⚖️ วิชา กฎหมายทั่วไปและการพยาบาล (General & Nursing Law)</option>
+                    <option value="funda" selected>🩺 วิชา การพยาบาลพื้นฐาน (Fundamental Nursing)</option>
+                    <option value="law">⚖️ วิชา กฎหมายทั่วไปและการพยาบาล (General & Nursing Law)</option>
                     <option value="micro">🦠 วิชา Microbiology (จุลชีววิทยาประยุกต์คลินิก)</option>
                 </select>
                 <p id="subject-desc" class="text-xs text-slate-500 mt-2 font-medium">
-                    📌 สกัดข้อสอบละเอียดจาก PDF สรุปกฎหมายแพ่ง-อาญา, พ.ร.บ. วิชาชีพการพยาบาลฯ, พ.ร.บ. สุขภาพแห่งชาติ และข้อบังคับสภาการพยาบาล
+                    📌 สกัดข้อสอบวิเคราะห์เคสทางคลินิกจาก PDF 5 เล่มใหม่: การดูแลก่อน-หลังผ่าตัด, การควบคุมเชื้อ, สวนปัสสาวะ/อุจจาระ, การบริหารยา/คำนวณยา, การให้สารน้ำ/เลือด
                 </p>
             </div>
 
@@ -138,9 +139,9 @@
                 </label>
                 <select id="level-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3.5 text-base font-semibold text-slate-800 focus:border-blue-500 focus:bg-white outline-none transition cursor-pointer shadow-sm">
                     <option value="all" selected>✨ รวมทุกระดับความยาก (All Levels Combined - คละข้อสอบ)</option>
-                    <option value="easy">🟢 ระดับง่าย (Easy - ความจำและความรู้พื้นฐาน)</option>
-                    <option value="medium">🟡 ระดับปานกลาง (Medium - เข้าใจกลไกและข้อบังคับ)</option>
-                    <option value="hard">🔴 ระดับยาก (Hard - ประยุกต์คลินิก / กรณีศึกษา)</option>
+                    <option value="easy">🟢 ระดับง่าย (Easy - ความรู้และนิยามพื้นฐาน)</option>
+                    <option value="medium">🟡 ระดับปานกลาง (Medium - หัตถการและคำนวณยา/สารน้ำ)</option>
+                    <option value="hard">🔴 ระดับยาก (Hard - กรณีศึกษาคลินิก / ภาวะแทรกซ้อน)</option>
                     <option value="expert" class="text-red-600 font-bold">🔥 ระดับปรมาจารย์ (Expert - ข้อสอบสภา / กรณีวิเคราะห์ซับซ้อน)</option>
                 </select>
                 <p class="text-xs text-slate-500 mt-2 font-medium">
@@ -247,7 +248,9 @@
     function updateSubjectTheme() {
         const subject = document.getElementById('subject-select').value;
         const desc = document.getElementById('subject-desc');
-        if (subject === 'law') {
+        if (subject === 'funda') {
+            desc.innerHTML = '📌 สกัดข้อสอบวิเคราะห์เคสทางคลินิกจาก PDF 5 เล่มใหม่: การดูแลก่อน-หลังผ่าตัด, การควบคุมเชื้อ, สวนปัสสาวะ/อุจจาระ, การบริหารยา/คำนวณยา, การให้สารน้ำ/เลือด';
+        } else if (subject === 'law') {
             desc.innerHTML = '📌 สกัดข้อสอบละเอียดจาก PDF สรุปกฎหมายแพ่ง-อาญา, พ.ร.บ. วิชาชีพการพยาบาลฯ, พ.ร.บ. สุขภาพแห่งชาติ และข้อบังคับสภาการพยาบาล';
         } else {
             desc.innerHTML = '📌 ครอบคลุมจุลชีววิทยาคลินิก: แบคทีเรีย, ไวรัส, เชื้อรา, การฆ่าเชื้อ, ยาปฏิชีวนะ, วัคซีน และโรคติดเชื้อ';
@@ -302,7 +305,6 @@
         const subjData = quizData[subject] || quizData;
 
         if (level === 'all') {
-            // Combine all levels
             ['easy', 'medium', 'hard', 'expert'].forEach(lvl => {
                 if (subjData[lvl]) {
                     sourcePool = sourcePool.concat(subjData[lvl]);
@@ -348,7 +350,10 @@
         userAnswers = new Array(currentQuestions.length).fill(null);
 
         // Update Header Badges
-        const subjectText = subject === 'law' ? '⚖️ กฎหมายทั่วไปและการพยาบาล' : '🦠 Microbiology';
+        let subjectText = '🩺 การพยาบาลพื้นฐาน';
+        if (subject === 'law') subjectText = '⚖️ กฎหมายทั่วไปและการพยาบาล';
+        else if (subject === 'micro') subjectText = '🦠 Microbiology';
+
         const levelSelect = document.getElementById('level-select');
         const levelText = levelSelect.options[levelSelect.selectedIndex].text;
 
@@ -403,7 +408,7 @@
                 </div>
                 <div class="options-container space-y-1">${optionsHTML}</div>
                 <div id="expl-q${qIndex}" class="explanation p-4 mt-4 text-sm md:text-base">
-                    <strong class="text-blue-800 font-bold block mb-1">💡 เฉลยและเหตุผลอ้างอิง:</strong>
+                    <strong class="text-blue-800 font-bold block mb-1">💡 เฉลยและเหตุผลทางคลินิก:</strong>
                     <div class="text-slate-700">${qObj.reason}</div>
                 </div>
             `;
@@ -488,13 +493,13 @@
         let badgeColor = "";
 
         if (percentage >= 80) {
-            msg = "👑 ยอดเยี่ยมระดับเกียรตินิยม! คุณมีความรู้ความเข้าใจในเนื้อหานี้อย่างแม่นยำ พร้อมลุยข้อสอบจริงแล้ว!";
+            msg = "👑 ยอดเยี่ยมระดับเกียรตินิยม! คุณมีความรู้ความเข้าใจในเนื้อหาการพยาบาลนี้อย่างแม่นยำ พร้อมลุยข้อสอบจริงปลายภาคปี 2 แล้ว!";
             badgeColor = "bg-emerald-100 border-2 border-emerald-400 text-emerald-900";
         } else if (percentage >= 50) {
-            msg = "👍 ทำได้ดีมากครับ! ลองอ่านคำอธิบายในข้อที่ผิดเพื่อทบทวนประเด็นสำคัญเพิ่มเติมนะ";
+            msg = "👍 ทำได้ดีมากครับ! ลองอ่านคำอธิบายในข้อที่ผิดเพื่อทบทวนหลักการพยาบาลและเหตุผลทางคลินิกเพิ่มเติมนะ";
             badgeColor = "bg-amber-100 border-2 border-amber-400 text-amber-900";
         } else {
-            msg = "📚 ไม่เป็นไรครับ! แนวข้อสอบระดับนี้เน้นการประยุกต์ อ่านเฉลยและสรุปกฎหมายเพิ่มเติมจะช่วยให้เข้าใจแน่นขึ้นแน่นอน";
+            msg = "📚 ไม่เป็นไรครับ! แนวข้อสอบวิเคราะห์เคสระดับปี 2 เน้นกระบวนการพยาบาลและการตัดสินใจ อ่านเฉลยเหตุผลทางคลินิกเพิ่มเติมรับรองเก่งขึ้นแน่นอน";
             badgeColor = "bg-rose-100 border-2 border-rose-400 text-rose-900";
         }
 
