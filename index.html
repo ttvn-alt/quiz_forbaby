@@ -3,237 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nursing Portal - คลังข้อสอบพยาบาลพื้นฐาน กฎหมาย และจุลชีววิทยา</title>
+    <title>ระบบแบบทดสอบทางการพยาบาล</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            color: #f8fafc;
+            font-family: 'Prompt', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
             min-height: 100vh;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-        }
-
-        .gradient-text-blue {
-            background: linear-gradient(135deg, #2563eb, #0284c7, #0d9488);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .clean-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         .option-card {
-            transition: all 0.2s ease-in-out;
+            transition: all 0.15s ease-in-out;
         }
 
         .option-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+            border-color: #3b82f6;
+            background-color: #f8fafc;
         }
 
         .option-card.selected {
             border-color: #2563eb !important;
             background-color: #eff6ff !important;
-            box-shadow: 0 0 0 2px #3b82f6 !important;
         }
 
         .correct-ans {
-            background-color: #dcfce7 !important;
+            background-color: #f0fdf4 !important;
             border-color: #22c55e !important;
-            color: #14532d !important;
+            color: #15803d !important;
             font-weight: 600;
         }
 
         .wrong-ans {
-            background-color: #fee2e2 !important;
+            background-color: #fef2f2 !important;
             border-color: #ef4444 !important;
-            color: #7f1d1d !important;
+            color: #b91c1c !important;
             text-decoration: line-through;
         }
 
         .explanation {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-left: 5px solid #0284c7;
-            border-radius: 0.75rem;
+            background-color: #f1f5f9;
+            border-left: 4px solid #0284c7;
+            border-radius: 0.5rem;
             display: none;
-            line-height: 1.7;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
+            background: #cbd5e1;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="p-3 md:p-6 pb-12 antialiased selection:bg-blue-500 selection:text-white">
+<body class="p-4 md:p-8 pb-16 antialiased">
 
-<div class="max-w-4xl mx-auto">
-    <!-- Header Navigation -->
-    <header class="mb-6 text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-300 text-sm font-medium mb-3 backdrop-blur-md">
-            <span>✨ Nursing Student Examination Portal (Year 2 Final Exam Prep)</span>
-        </div>
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-2">
-            🩺 คลังข้อสอบพยาบาลศาสตร์ <span class="gradient-text-blue">&amp; กฎหมายวิชาชีพ</span>
+<div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8 text-center border-b border-slate-200 pb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight mb-2">
+            ระบบแบบทดสอบทางการพยาบาล
         </h1>
-        <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto">
-            เตรียมสอบปลายภาคและสอบสภาการพยาบาล: การพยาบาลพื้นฐาน, กฎหมายทั่วไป/วิชาชีพ และ จุลชีววิทยา
+        <p class="text-slate-500 text-sm md:text-base">
+            แบบทดสอบวิชาการพยาบาลพื้นฐาน กฎหมายวิชาชีพ และจุลชีววิทยา
         </p>
     </header>
 
     <!-- Setup Section -->
-    <div id="setup-section" class="glass-card rounded-3xl p-6 md:p-10 text-slate-800 animate-fade-in shadow-2xl">
-        <div class="flex items-center justify-between border-b pb-4 mb-6">
-            <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                ⚙️ ตั้งค่าการทดสอบ
+    <div id="setup-section" class="clean-card p-6 md:p-8">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+            <h2 class="text-lg font-bold text-slate-800">
+                เลือกแบบทดสอบ
             </h2>
-            <button onclick="toggleSummaryModal()" class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition shadow-sm border border-indigo-200">
-                📖 อ่านสรุปกฎหมายฉบับเต็ม (Cheat Sheet)
+            <button onclick="toggleSummaryModal()" class="text-sm font-medium text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                📖 สรุปเนื้อหากฎหมาย
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="space-y-5 mb-6">
             <!-- Subject Selection -->
             <div>
-                <label class="block text-slate-700 font-bold mb-2 text-base flex items-center gap-2">
-                    📚 เลือกรายวิชา:
+                <label class="block text-slate-700 font-semibold mb-2 text-sm">
+                    วิชา:
                 </label>
-                <select id="subject-select" onchange="updateSubjectTheme()" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3.5 text-base font-semibold text-slate-800 focus:border-blue-500 focus:bg-white outline-none transition cursor-pointer shadow-sm">
-                    <option value="funda" selected>🩺 วิชา การพยาบาลพื้นฐาน (Fundamental Nursing)</option>
-                    <option value="law">⚖️ วิชา กฎหมายทั่วไปและการพยาบาล (General & Nursing Law)</option>
-                    <option value="micro">🦠 วิชา Microbiology (จุลชีววิทยาประยุกต์คลินิก)</option>
+                <select id="subject-select" onchange="updateSubjectTheme()" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-sm font-medium text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition cursor-pointer">
+                    <option value="funda" selected>การพยาบาลพื้นฐาน (Fundamental Nursing)</option>
+                    <option value="law">กฎหมายทั่วไปและการพยาบาล (General & Nursing Law)</option>
+                    <option value="micro">จุลชีววิทยาประยุกต์คลินิก (Microbiology)</option>
                 </select>
-                <p id="subject-desc" class="text-xs text-slate-500 mt-2 font-medium">
-                    📌 สกัดข้อสอบวิเคราะห์เคสทางคลินิกจาก PDF 5 เล่มใหม่: การดูแลก่อน-หลังผ่าตัด, การควบคุมเชื้อ, สวนปัสสาวะ/อุจจาระ, การบริหารยา/คำนวณยา, การให้สารน้ำ/เลือด
+                <p id="subject-desc" class="text-xs text-slate-500 mt-1.5">
+                    ข้อสอบการพยาบาลก่อน-หลังผ่าตัด การให้สารน้ำ/เลือด การบริหารยา การสวนปัสสาวะ และการควบคุมการติดเชื้อ
                 </p>
             </div>
 
             <!-- Level Selection -->
             <div>
-                <label class="block text-slate-700 font-bold mb-2 text-base flex items-center gap-2">
-                    ⚡ เลือกระดับความยาก:
+                <label class="block text-slate-700 font-semibold mb-2 text-sm">
+                    ระดับความยาก:
                 </label>
-                <select id="level-select" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-3.5 text-base font-semibold text-slate-800 focus:border-blue-500 focus:bg-white outline-none transition cursor-pointer shadow-sm">
-                    <option value="all" selected>✨ รวมทุกระดับความยาก (All Levels Combined - คละข้อสอบ)</option>
-                    <option value="easy">🟢 ระดับง่าย (Easy - ความรู้และนิยามพื้นฐาน)</option>
-                    <option value="medium">🟡 ระดับปานกลาง (Medium - หัตถการและคำนวณยา/สารน้ำ)</option>
-                    <option value="hard">🔴 ระดับยาก (Hard - กรณีศึกษาคลินิก / ภาวะแทรกซ้อน)</option>
-                    <option value="expert" class="text-red-600 font-bold">🔥 ระดับปรมาจารย์ (Expert - ข้อสอบสภา / กรณีวิเคราะห์ซับซ้อน)</option>
+                <select id="level-select" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-sm font-medium text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition cursor-pointer">
+                    <option value="all" selected>ทุกระดับความยาก (Combined)</option>
+                    <option value="easy">ระดับง่าย (Easy)</option>
+                    <option value="medium">ระดับปานกลาง (Medium)</option>
+                    <option value="hard">ระดับยาก (Hard)</option>
+                    <option value="expert">ระดับยากมาก (Expert)</option>
                 </select>
-                <p class="text-xs text-slate-500 mt-2 font-medium">
-                    เลือกความยากเฉพาะหมวด หรือรวมทุกระดับความยากเพื่อฝึกทำข้อสอบหลากหลาย
-                </p>
             </div>
-        </div>
 
-        <!-- Advanced Options: Randomization & Question Count -->
-        <div class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-5 mb-8">
-            <h3 class="font-bold text-slate-700 mb-3 flex items-center gap-2 text-sm uppercase tracking-wider">
-                🎛️ ตัวเลือกเพิ่มเติม &amp; ระบบสุ่ม (Randomization)
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <label class="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition shadow-sm">
-                    <input type="checkbox" id="random-questions" checked class="w-5 h-5 text-blue-600 rounded accent-blue-600 cursor-pointer">
-                    <span class="text-sm font-semibold text-slate-700">🎲 สุ่มลำดับข้อสอบ</span>
-                </label>
-                <label class="flex items-center gap-3 bg-white p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:border-blue-400 transition shadow-sm">
-                    <input type="checkbox" id="random-options" checked class="w-5 h-5 text-blue-600 rounded accent-blue-600 cursor-pointer">
-                    <span class="text-sm font-semibold text-slate-700">🔀 สุ่มลำดับตัวเลือก (Choice)</span>
-                </label>
-                <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
-                    <span class="text-xs font-bold text-slate-500 pl-2">🔢 จำนวนข้อ:</span>
-                    <select id="question-count-select" class="w-full bg-slate-100 font-semibold text-slate-700 rounded-lg p-1.5 text-sm outline-none cursor-pointer">
-                        <option value="10">10 ข้อ (ชุดย่อ)</option>
-                        <option value="20" selected>20 ข้อ (ชุดมาตรฐาน)</option>
-                        <option value="30">30 ข้อ (ชุดจุใจ)</option>
-                        <option value="all">ทั้งหมด (ทำทุกข้อในคลัง)</option>
-                    </select>
+            <!-- Options -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ตัวเลือกเพิ่มเติม</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <label class="flex items-center gap-2.5 bg-white p-2.5 rounded-lg border border-slate-200 cursor-pointer text-sm font-medium text-slate-700">
+                        <input type="checkbox" id="random-questions" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span>สุ่มข้อสอบ</span>
+                    </label>
+                    <label class="flex items-center gap-2.5 bg-white p-2.5 rounded-lg border border-slate-200 cursor-pointer text-sm font-medium text-slate-700">
+                        <input type="checkbox" id="random-options" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span>สุ่มตัวเลือก</span>
+                    </label>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 text-sm">
+                        <span class="text-xs font-medium text-slate-500 shrink-0">จำนวน:</span>
+                        <select id="question-count-select" class="w-full bg-slate-50 font-medium text-slate-700 rounded p-1 text-sm outline-none">
+                            <option value="10">10 ข้อ</option>
+                            <option value="20" selected>20 ข้อ</option>
+                            <option value="30">30 ข้อ</option>
+                            <option value="all">ทั้งหมด</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <button onclick="startQuiz()" class="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 rounded-2xl text-xl shadow-xl hover:shadow-blue-500/25 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
-            🚀 เริ่มทำแบบทดสอบ
+        <button onclick="startQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-base transition shadow-sm">
+            เริ่มทำแบบทดสอบ
         </button>
     </div>
 
     <!-- Quiz Section -->
-    <div id="quiz-section" class="hidden glass-card rounded-3xl p-6 md:p-10 text-slate-800 animate-fade-in shadow-2xl">
+    <div id="quiz-section" class="hidden clean-card p-6 md:p-8">
         <!-- Progress Bar & Status -->
-        <div class="mb-6">
+        <div class="mb-6 border-b border-slate-100 pb-4">
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-2">
-                    <span id="subject-badge" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold"></span>
-                    <span id="level-badge" class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs font-bold"></span>
+                    <span id="subject-badge" class="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded text-xs font-semibold"></span>
+                    <span id="level-badge" class="bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded text-xs font-semibold"></span>
                 </div>
-                <span id="progress-text" class="text-sm font-bold text-slate-600">ตอบแล้ว 0 / 0</span>
+                <span id="progress-text" class="text-xs font-medium text-slate-500">0 / 0</span>
             </div>
-            <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-300" style="width: 0%;"></div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-200" style="width: 0%;"></div>
             </div>
         </div>
 
         <div id="questions-container"></div>
 
-        <button id="submit-btn" onclick="submitQuiz()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-4 rounded-2xl text-xl shadow-lg hover:shadow-emerald-500/25 transition transform active:scale-[0.99] mt-8 flex items-center justify-center gap-2">
-            ✅ ส่งคำตอบและตรวจผลคะแนน
+        <button id="submit-btn" onclick="submitQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg text-base transition shadow-sm mt-6">
+            ส่งคำตอบ
         </button>
 
-        <div id="result-box" class="mt-8 text-center p-8 rounded-2xl hidden shadow-lg animate-fade-in"></div>
+        <div id="result-box" class="mt-6 text-center p-6 rounded-xl hidden"></div>
 
-        <div id="action-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 hidden">
-            <button onclick="restartQuizWithSameSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-lg transition shadow-md flex items-center justify-center gap-2">
-                🎲 ทำอีกครั้ง (สุ่มชุดใหม่)
+        <div id="action-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6 hidden">
+            <button onclick="restartQuizWithSameSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition">
+                ทำอีกครั้ง (สุ่มใหม่)
             </button>
-            <button onclick="resetSetup()" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl text-lg transition shadow-md flex items-center justify-center gap-2">
-                🔄 เปลี่ยนวิชา / ระดับความยาก
+            <button onclick="resetSetup()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 rounded-lg text-sm transition">
+                เลือกแบบทดสอบอื่น
             </button>
         </div>
     </div>
 </div>
 
-<!-- Legal Summary Cheat Sheet Modal -->
-<div id="summary-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden animate-fade-in">
-    <div class="bg-white text-slate-800 rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
-        <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-blue-900 text-white p-6 flex justify-between items-center">
-            <div>
-                <h3 class="text-2xl font-bold flex items-center gap-2">📖 สรุปกฎหมายสำคัญฉบับเต็ม (Legal Cheat Sheet)</h3>
-                <p class="text-xs text-indigo-200 mt-1">สรุปสาระสำคัญ มาตรากฎหมาย และข้อยกเว้นจากเอกสาร PDF ทั้ง 3 ฉบับ</p>
-            </div>
-            <button onclick="toggleSummaryModal()" class="text-white/70 hover:text-white text-2xl font-bold bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition">
+<!-- Legal Summary Modal -->
+<div id="summary-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white text-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl overflow-hidden border border-slate-200">
+        <div class="bg-slate-900 text-white p-5 flex justify-between items-center">
+            <h3 class="text-lg font-bold">สรุปเนื้อหากฎหมายสำคัญ</h3>
+            <button onclick="toggleSummaryModal()" class="text-slate-400 hover:text-white text-xl font-bold w-8 h-8 flex items-center justify-center rounded-lg">
                 ✕
             </button>
         </div>
-        <div id="summary-modal-content" class="p-6 overflow-y-auto space-y-6 text-sm leading-relaxed">
-            <!-- Rendered by JS from lawSummaryData -->
+        <div id="summary-modal-content" class="p-6 overflow-y-auto space-y-5 text-sm leading-relaxed">
+            <!-- Rendered by JS -->
         </div>
-        <div class="bg-slate-100 p-4 border-t text-right">
-            <button onclick="toggleSummaryModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl transition">
-                เข้าใจแล้ว พร้อมทำแบบทดสอบ 🚀
+        <div class="bg-slate-50 p-4 border-t border-slate-100 text-right">
+            <button onclick="toggleSummaryModal()" class="bg-slate-800 hover:bg-slate-900 text-white font-medium px-5 py-2 rounded-lg text-sm transition">
+                ปิดหน้าต่าง
             </button>
         </div>
     </div>
@@ -249,11 +222,11 @@
         const subject = document.getElementById('subject-select').value;
         const desc = document.getElementById('subject-desc');
         if (subject === 'funda') {
-            desc.innerHTML = '📌 สกัดข้อสอบวิเคราะห์เคสทางคลินิกจาก PDF 5 เล่มใหม่: การดูแลก่อน-หลังผ่าตัด, การควบคุมเชื้อ, สวนปัสสาวะ/อุจจาระ, การบริหารยา/คำนวณยา, การให้สารน้ำ/เลือด';
+            desc.innerHTML = 'ข้อสอบการพยาบาลก่อน-หลังผ่าตัด การให้สารน้ำ/เลือด การบริหารยา การสวนปัสสาวะ และการควบคุมการติดเชื้อ';
         } else if (subject === 'law') {
-            desc.innerHTML = '📌 สกัดข้อสอบละเอียดจาก PDF สรุปกฎหมายแพ่ง-อาญา, พ.ร.บ. วิชาชีพการพยาบาลฯ, พ.ร.บ. สุขภาพแห่งชาติ และข้อบังคับสภาการพยาบาล';
+            desc.innerHTML = 'ข้อสอบกฎหมายแพ่ง-อาญา พ.ร.บ. วิชาชีพการพยาบาลฯ พ.ร.บ. สุขภาพแห่งชาติ และข้อบังคับสภาการพยาบาล';
         } else {
-            desc.innerHTML = '📌 ครอบคลุมจุลชีววิทยาคลินิก: แบคทีเรีย, ไวรัส, เชื้อรา, การฆ่าเชื้อ, ยาปฏิชีวนะ, วัคซีน และโรคติดเชื้อ';
+            desc.innerHTML = 'ข้อสอบจุลชีววิทยาคลินิก แบคทีเรีย ไวรัส เชื้อรา การทำลายเชื้อ ยาปฏิชีวนะ และวัคซีน';
         }
     }
 
@@ -268,19 +241,19 @@
     function renderLegalSummary() {
         const container = document.getElementById('summary-modal-content');
         if (typeof lawSummaryData === 'undefined') {
-            container.innerHTML = '<p class="text-red-500 font-bold">ไม่พบข้อมูลสรุปกฎหมาย</p>';
+            container.innerHTML = '<p class="text-red-500">ไม่พบข้อมูลสรุปกฎหมาย</p>';
             return;
         }
         let html = '';
         lawSummaryData.forEach(item => {
             html += `
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
-                        <h4 class="text-base font-bold text-indigo-900">${item.title}</h4>
-                        <span class="bg-indigo-100 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-semibold">${item.badge}</span>
+                        <h4 class="font-bold text-slate-900">${item.title}</h4>
+                        <span class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded font-medium">${item.badge}</span>
                     </div>
-                    <ul class="space-y-3 text-slate-700">
-                        ${item.points.map(p => `<li class="flex items-start gap-2"><span class="text-indigo-500 font-bold mt-0.5">•</span><div class="leading-relaxed">${p}</div></li>`).join('')}
+                    <ul class="space-y-2 text-slate-700">
+                        ${item.points.map(p => `<li class="flex items-start gap-2"><span class="text-slate-400 font-bold">•</span><div class="leading-relaxed">${p}</div></li>`).join('')}
                     </ul>
                 </div>
             `;
@@ -290,7 +263,7 @@
 
     function startQuiz() {
         if (typeof quizData === 'undefined') {
-            alert("ไม่สามารถโหลดฐานข้อมูลข้อสอบได้ กรุณาตรวจสอบไฟล์ question.js");
+            alert("ไม่สามารถโหลดฐานข้อมูลข้อสอบได้");
             return;
         }
 
@@ -300,7 +273,6 @@
         const isRandomOpt = document.getElementById('random-options').checked;
         const countChoice = document.getElementById('question-count-select').value;
 
-        // Fetch source pool
         let sourcePool = [];
         const subjData = quizData[subject] || quizData;
 
@@ -317,19 +289,16 @@
         }
 
         if (!sourcePool || sourcePool.length === 0) {
-            alert("ไม่พบข้อสอบในระดับนี้ กรุณาเลือกตัวเลือกอื่นครับ");
+            alert("ไม่พบข้อสอบในหมวดนี้");
             return;
         }
 
-        // Deep copy pool
         let processedPool = JSON.parse(JSON.stringify(sourcePool));
 
-        // 1. Shuffle Questions if checked
         if (isRandomQ) {
             shuffleArray(processedPool);
         }
 
-        // Slice question count
         if (countChoice !== 'all') {
             const num = parseInt(countChoice, 10);
             if (!isNaN(num) && num > 0) {
@@ -337,7 +306,6 @@
             }
         }
 
-        // 2. Shuffle Options if checked
         if (isRandomOpt) {
             processedPool.forEach(qObj => {
                 const correctText = qObj.options[qObj.ans];
@@ -349,10 +317,9 @@
         currentQuestions = processedPool;
         userAnswers = new Array(currentQuestions.length).fill(null);
 
-        // Update Header Badges
-        let subjectText = '🩺 การพยาบาลพื้นฐาน';
-        if (subject === 'law') subjectText = '⚖️ กฎหมายทั่วไปและการพยาบาล';
-        else if (subject === 'micro') subjectText = '🦠 Microbiology';
+        let subjectText = 'การพยาบาลพื้นฐาน';
+        if (subject === 'law') subjectText = 'กฎหมายทั่วไปและการพยาบาล';
+        else if (subject === 'micro') subjectText = 'จุลชีววิทยา';
 
         const levelSelect = document.getElementById('level-select');
         const levelText = levelSelect.options[levelSelect.selectedIndex].text;
@@ -385,16 +352,16 @@
 
         currentQuestions.forEach((qObj, qIndex) => {
             const qDiv = document.createElement('div');
-            qDiv.className = 'bg-slate-50/90 p-5 md:p-7 rounded-2xl mb-6 border border-slate-200 shadow-sm animate-fade-in';
+            qDiv.className = 'bg-white p-5 md:p-6 rounded-xl mb-5 border border-slate-200';
 
             let optionsHTML = '';
             qObj.options.forEach((opt, oIndex) => {
                 const optionLabel = labels[oIndex] || `${oIndex + 1}`;
                 optionsHTML += `
-                    <label id="label-q${qIndex}-o${oIndex}" class="option-card flex items-start p-4 mb-3 bg-white border-2 border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 transition relative">
-                        <input type="radio" name="q${qIndex}" value="${oIndex}" class="mt-1 mr-3.5 w-5 h-5 accent-blue-600 cursor-pointer" onchange="selectAnswer(${qIndex}, ${oIndex})">
-                        <div class="flex gap-2 text-base text-slate-800 leading-relaxed">
-                            <span class="font-bold text-blue-600">${optionLabel}.</span>
+                    <label id="label-q${qIndex}-o${oIndex}" class="option-card flex items-start p-3.5 mb-2.5 bg-white border border-slate-200 rounded-lg cursor-pointer transition">
+                        <input type="radio" name="q${qIndex}" value="${oIndex}" class="mt-0.5 mr-3 w-4 h-4 accent-blue-600 cursor-pointer" onchange="selectAnswer(${qIndex}, ${oIndex})">
+                        <div class="flex gap-2 text-sm text-slate-800 leading-relaxed">
+                            <span class="font-semibold text-blue-600 shrink-0">${optionLabel}.</span>
                             <span>${opt}</span>
                         </div>
                     </label>
@@ -402,14 +369,14 @@
             });
 
             qDiv.innerHTML = `
-                <div class="flex items-start gap-3 mb-4">
-                    <span class="bg-blue-600 text-white font-bold px-3 py-1 rounded-lg text-sm shrink-0">ข้อ ${qIndex + 1}</span>
-                    <h3 class="text-lg md:text-xl font-bold text-slate-900 leading-relaxed">${qObj.q}</h3>
+                <div class="flex items-start gap-2.5 mb-4">
+                    <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-0.5 rounded text-xs shrink-0 mt-0.5">ข้อ ${qIndex + 1}</span>
+                    <h3 class="text-base md:text-lg font-bold text-slate-900 leading-relaxed">${qObj.q}</h3>
                 </div>
-                <div class="options-container space-y-1">${optionsHTML}</div>
-                <div id="expl-q${qIndex}" class="explanation p-4 mt-4 text-sm md:text-base">
-                    <strong class="text-blue-800 font-bold block mb-1">💡 เฉลยและเหตุผลทางคลินิก:</strong>
-                    <div class="text-slate-700">${qObj.reason}</div>
+                <div class="options-container">${optionsHTML}</div>
+                <div id="expl-q${qIndex}" class="explanation p-4 mt-3 text-sm">
+                    <strong class="text-slate-800 font-semibold block mb-1">💡 เฉลยและเหตุผล:</strong>
+                    <div class="text-slate-700 leading-relaxed">${qObj.reason}</div>
                 </div>
             `;
             container.appendChild(qDiv);
@@ -439,15 +406,15 @@
         const total = currentQuestions.length;
         const percent = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
 
-        document.getElementById('progress-text').innerText = `ตอบแล้ว ${answeredCount} / ${total} ข้อ (${percent}%)`;
+        document.getElementById('progress-text').innerText = `${answeredCount} / ${total} ข้อ`;
         document.getElementById('progress-bar').style.width = `${percent}%`;
     }
 
     function submitQuiz() {
-        const unansweredIndices = userAnswers.map((a, idx) => a === null ? idx + 1 : null).filter(a => a !== null);
+        const unanswered = userAnswers.map((a, idx) => a === null ? idx + 1 : null).filter(a => a !== null);
 
-        if (unansweredIndices.length > 0) {
-            alert(`กรุณาตอบคำถามให้ครบทุกข้อก่อนส่งครับ 🚨 (ยังไม่ได้ตอบข้อ: ${unansweredIndices.join(', ')})`);
+        if (unanswered.length > 0) {
+            alert(`กรุณาตอบคำถามให้ครบทุกข้อก่อนส่งครับ (ยังไม่ได้ตอบข้อ: ${unanswered.join(', ')})`);
             return;
         }
 
@@ -493,21 +460,21 @@
         let badgeColor = "";
 
         if (percentage >= 80) {
-            msg = "👑 ยอดเยี่ยมระดับเกียรตินิยม! คุณมีความรู้ความเข้าใจในเนื้อหาการพยาบาลนี้อย่างแม่นยำ พร้อมลุยข้อสอบจริงปลายภาคปี 2 แล้ว!";
-            badgeColor = "bg-emerald-100 border-2 border-emerald-400 text-emerald-900";
+            msg = "ทำคะแนนได้ดีมาก คุณมีความเข้าใจในเนื้อหาวิชานี้เป็นอย่างดี";
+            badgeColor = "bg-green-50 border border-green-200 text-green-800";
         } else if (percentage >= 50) {
-            msg = "👍 ทำได้ดีมากครับ! ลองอ่านคำอธิบายในข้อที่ผิดเพื่อทบทวนหลักการพยาบาลและเหตุผลทางคลินิกเพิ่มเติมนะ";
-            badgeColor = "bg-amber-100 border-2 border-amber-400 text-amber-900";
+            msg = "ผ่านเกณฑ์การทดสอบ แนะนำให้ทบทวนข้อที่ผิดเพิ่มเติมเพื่อความแม่นยำ";
+            badgeColor = "bg-amber-50 border border-amber-200 text-amber-800";
         } else {
-            msg = "📚 ไม่เป็นไรครับ! แนวข้อสอบวิเคราะห์เคสระดับปี 2 เน้นกระบวนการพยาบาลและการตัดสินใจ อ่านเฉลยเหตุผลทางคลินิกเพิ่มเติมรับรองเก่งขึ้นแน่นอน";
-            badgeColor = "bg-rose-100 border-2 border-rose-400 text-rose-900";
+            msg = "ลองอ่านทบทวนเฉลยคำอธิบายในข้อที่ผิดเพื่อเสริมความเข้าใจให้ดียิ่งขึ้น";
+            badgeColor = "bg-slate-100 border border-slate-200 text-slate-800";
         }
 
-        resultBox.className = `mt-8 text-center p-8 rounded-2xl font-bold shadow-lg ${badgeColor} animate-fade-in`;
+        resultBox.className = `mt-6 text-center p-6 rounded-xl font-bold ${badgeColor}`;
         resultBox.innerHTML = `
-            <div class="text-4xl md:text-5xl font-black mb-2">${score} / ${total}</div>
-            <div class="text-lg text-slate-700 font-semibold mb-3">คิดเป็น ${percentage}%</div>
-            <div class="text-base font-normal max-w-xl mx-auto leading-relaxed border-t border-slate-300/60 pt-3">${msg}</div>
+            <div class="text-3xl font-extrabold mb-1">คะแนนของคุณ: ${score} / ${total}</div>
+            <div class="text-sm font-semibold mb-2">คิดเป็น ${percentage}%</div>
+            <div class="text-sm font-normal text-slate-600 max-w-md mx-auto">${msg}</div>
         `;
 
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
