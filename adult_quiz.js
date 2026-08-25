@@ -168,7 +168,7 @@ const AdultQuizEngine = {
         const allDifficulties = ['easy', 'medium', 'hard', 'expert'];
         const targetDiffs = (difficulty === 'all') ? allDifficulties : [difficulty];
 
-        // รวม pool
+        // รวมข้อในระดับที่เลือกก่อน
         targetChapters.forEach(chId => {
             if (!adultQuizData[chId]) return;
             targetDiffs.forEach(diff => {
@@ -183,6 +183,24 @@ const AdultQuizEngine = {
         if (mode === QUIZ_MODE.MISTAKE) {
             const mistakeIds = this.getMistakeIds();
             pool = pool.filter(q => mistakeIds.includes(q.id));
+        }
+
+        // ระดับความยากเป็น "ระดับที่เน้น" ไม่ใช่โควตาที่ทำให้แบบทดสอบเหลือ 2 ข้อ
+        // หากจำนวนที่ขอมากกว่าข้อของระดับนั้น ให้เติมข้อระดับอื่นจาก "บทเดิมเท่านั้น"
+        // โดยไม่ซ้ำ questionId. Mistake mode ต้องคงเฉพาะข้อผิด จึงไม่เติมข้ออื่น
+        if (mode !== QUIZ_MODE.MISTAKE && difficulty !== 'all' && count > 0 && pool.length < count) {
+            const chosenIds = new Set(pool.map(q => q.id));
+            const supplemental = [];
+            targetChapters.forEach(chId => {
+                const chapter = adultQuizData[chId];
+                if (!chapter) return;
+                allDifficulties.filter(diff => diff !== difficulty).forEach(diff => {
+                    (chapter[diff] || []).forEach(q => {
+                        if (!chosenIds.has(q.id)) supplemental.push({ ...q, difficultyRequested: difficulty });
+                    });
+                });
+            });
+            pool = pool.concat(supplemental);
         }
 
         // ให้ข้อที่ยังไม่เคยทำมาก่อนอยู่ก่อนข้อเดิม หากยังมีข้อเหลือ

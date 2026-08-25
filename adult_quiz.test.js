@@ -17,4 +17,10 @@ for (const question of Object.values(adultQuizData).flatMap(ch => Object.values(
     throw new Error(`Invalid schema: ${question.id}`);
   }
 }
+if (AdultQuizEngine.getQuestions({ chapters: ['all'], difficulty: 'expert', count: 30 }).length !== 30) {
+  throw new Error('Difficulty selection must still provide a 30-question exam across selected chapters.');
+}
+if (AdultQuizEngine.getQuestions({ chapters: ['adult-periop'], difficulty: 'expert', count: 20 }).length !== 20) {
+  throw new Error('A chapter must provide 20 unique questions even when one difficulty is preferred.');
+}
 console.log('Adult Nursing bank validation passed.');

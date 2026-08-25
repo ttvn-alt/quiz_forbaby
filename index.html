@@ -260,10 +260,24 @@
         const analytics=AdultQuizEngine.getAnalytics();
         const chapters=Object.values(analytics.chapterStats).filter(x=>x.attempts);
         const weak=Object.entries(analytics.topicStats).filter(([,x])=>x.attempts).sort((a,b)=>a[1].score-b[1].score)[0];
-        box.innerHTML = `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input id="adult-all-chapters" type="checkbox" checked onchange="toggleAllAdultChapters(this.checked)">ทุกบท</label>` + adultChapters.map(ch => `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input class="adult-chapter-choice" type="checkbox" value="${ch.id}" checked onchange="document.getElementById('adult-all-chapters').checked=false">${ch.name}</label>`).join('') + `<div class="sm:col-span-2 bg-white border border-indigo-100 rounded-lg p-3 text-xs text-slate-600"><b>Exam Analytics</b> · Overall: ${analytics.overallScore === null ? 'ยังไม่มีข้อมูล' : analytics.overallScore+'%'} · Weakest topic: ${weak ? weak[0] : 'ทำแบบทดสอบเพื่อเริ่มวิเคราะห์'}<div class="mt-1">${chapters.map(x=>`${x.name} ${x.score}%`).join(' · ')}</div></div>`;
+        box.innerHTML = `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input id="adult-all-chapters" type="checkbox" checked onchange="toggleAllAdultChapters(this.checked); updateAdultQuestionCountChoices()">ทุกบท</label>` + adultChapters.map(ch => `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input class="adult-chapter-choice" type="checkbox" value="${ch.id}" checked onchange="document.getElementById('adult-all-chapters').checked=false; updateAdultQuestionCountChoices()">${ch.name}</label>`).join('') + `<div class="sm:col-span-2 bg-white border border-indigo-100 rounded-lg p-3 text-xs text-slate-600"><b>Exam Analytics</b> · Overall: ${analytics.overallScore === null ? 'ยังไม่มีข้อมูล' : analytics.overallScore+'%'} · Weakest topic: ${weak ? weak[0] : 'ทำแบบทดสอบเพื่อเริ่มวิเคราะห์'}<div class="mt-1">${chapters.map(x=>`${x.name} ${x.score}%`).join(' · ')}</div></div>`;
+        updateAdultQuestionCountChoices();
     }
     function toggleAllAdultChapters(checked) { document.querySelectorAll('.adult-chapter-choice').forEach(el => el.checked = checked); }
     function selectedAdultChapters() { const all=document.getElementById('adult-all-chapters'); return all && all.checked ? ['all'] : [...document.querySelectorAll('.adult-chapter-choice:checked')].map(el=>el.value); }
+    function updateAdultQuestionCountChoices() {
+        if (document.getElementById('subject-select').value !== 'adult') return;
+        const selected = selectedAdultChapters();
+        const available = selected.includes('all') ? adultChapters.length * 20 : selected.length * 20;
+        const select = document.getElementById('question-count-select');
+        [...select.options].forEach(option => {
+            if (option.value === 'all') return;
+            const requested = Number(option.value);
+            option.disabled = requested > available;
+            option.text = `${requested} ข้อ${requested > available ? ` (เลือกอย่างน้อย ${Math.ceil(requested / 20)} บท)` : ''}`;
+        });
+        if (select.selectedOptions[0].disabled) select.value = available >= 20 ? '20' : '10';
+    }
 
     function toggleSummaryModal() {
         const modal = document.getElementById('summary-modal');
