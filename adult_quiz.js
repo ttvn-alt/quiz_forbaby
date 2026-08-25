@@ -631,7 +631,7 @@ const AdultQuizValidator = {
                 total += qs.length;
             });
             results[chId].total = total;
-            results[chId].valid = (total === 20);
+            results[chId].valid = (total === 30);
         });
         return results;
     },

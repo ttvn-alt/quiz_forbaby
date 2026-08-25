@@ -268,13 +268,13 @@
     function updateAdultQuestionCountChoices() {
         if (document.getElementById('subject-select').value !== 'adult') return;
         const selected = selectedAdultChapters();
-        const available = selected.includes('all') ? adultChapters.length * 20 : selected.length * 20;
+        const available = selected.includes('all') ? adultChapters.length * 30 : selected.length * 30;
         const select = document.getElementById('question-count-select');
         [...select.options].forEach(option => {
             if (option.value === 'all') return;
             const requested = Number(option.value);
             option.disabled = requested > available;
-            option.text = `${requested} ข้อ${requested > available ? ` (เลือกอย่างน้อย ${Math.ceil(requested / 20)} บท)` : ''}`;
+            option.text = `${requested} ข้อ${requested > available ? ` (เลือกอย่างน้อย ${Math.ceil(requested / 30)} บท)` : ''}`;
         });
         if (select.selectedOptions[0].disabled) select.value = available >= 20 ? '20' : '10';
     }
