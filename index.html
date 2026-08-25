@@ -82,7 +82,7 @@
             ระบบแบบทดสอบทางการพยาบาล
         </h1>
         <p class="text-slate-500 text-sm md:text-base">
-            แบบทดสอบวิชาการพยาบาลพื้นฐาน กฎหมายวิชาชีพ และจุลชีววิทยา
+            แบบทดสอบสำหรับทบทวนการพยาบาลพื้นฐาน กฎหมาย จุลชีววิทยา และการพยาบาลผู้ใหญ่
         </p>
     </header>
 
@@ -107,10 +107,27 @@
                     <option value="funda" selected>การพยาบาลพื้นฐาน (Fundamental Nursing)</option>
                     <option value="law">กฎหมายทั่วไปและการพยาบาล (General & Nursing Law)</option>
                     <option value="micro">จุลชีววิทยาประยุกต์คลินิก (Microbiology)</option>
+                    <option value="adult">การพยาบาลผู้ใหญ่ (Adult Nursing)</option>
                 </select>
                 <p id="subject-desc" class="text-xs text-slate-500 mt-1.5">
                     ข้อสอบการพยาบาลก่อน-หลังผ่าตัด การให้สารน้ำ/เลือด การบริหารยา การสวนปัสสาวะ และการควบคุมการติดเชื้อ
                 </p>
+            </div>
+
+            <div id="adult-controls" class="hidden space-y-4 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                <div>
+                    <label class="block text-slate-700 font-semibold mb-2 text-sm">เลือกบท (เลือกได้หลายบท):</label>
+                    <div id="adult-chapter-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm"></div>
+                </div>
+                <div>
+                    <label class="block text-slate-700 font-semibold mb-2 text-sm">โหมด:</label>
+                    <select id="adult-mode-select" class="w-full bg-white border border-slate-300 rounded-lg p-3 text-sm font-medium text-slate-800">
+                        <option value="practice">Practice - เฉลยหลังตอบ</option>
+                        <option value="exam">Exam - เฉลยเมื่อส่งครบ</option>
+                        <option value="mistake">Mistake Review - ทบทวนข้อที่เคยผิด</option>
+                    </select>
+                </div>
+                <button type="button" onclick="openAdultSummary()" class="w-full text-sm font-medium text-indigo-700 bg-white border border-indigo-200 hover:bg-indigo-100 px-3 py-2 rounded-lg transition">📚 สรุปเนื้อหา Adult Nursing</button>
             </div>
 
             <!-- Level Selection -->
@@ -213,6 +230,8 @@
 </div>
 
 <script src="question.js"></script>
+<script src="adult_data.js"></script>
+<script src="adult_quiz.js"></script>
 
 <script>
     let currentQuestions = [];
@@ -221,14 +240,30 @@
     function updateSubjectTheme() {
         const subject = document.getElementById('subject-select').value;
         const desc = document.getElementById('subject-desc');
+        const adultControls = document.getElementById('adult-controls');
+        adultControls.classList.toggle('hidden', subject !== 'adult');
         if (subject === 'funda') {
             desc.innerHTML = 'ข้อสอบการพยาบาลก่อน-หลังผ่าตัด การให้สารน้ำ/เลือด การบริหารยา การสวนปัสสาวะ และการควบคุมการติดเชื้อ';
         } else if (subject === 'law') {
             desc.innerHTML = 'ข้อสอบกฎหมายแพ่ง-อาญา พ.ร.บ. วิชาชีพการพยาบาลฯ พ.ร.บ. สุขภาพแห่งชาติ และข้อบังคับสภาการพยาบาล';
-        } else {
+        } else if (subject === 'micro') {
             desc.innerHTML = 'ข้อสอบจุลชีววิทยาคลินิก แบคทีเรีย ไวรัส เชื้อรา การทำลายเชื้อ ยาปฏิชีวนะ และวัคซีน';
+        } else {
+            desc.innerHTML = 'ข้อสอบการพยาบาลผู้ใหญ่ แบ่งตามบทจากเอกสารรายวิชา พร้อมโหมดฝึกทำข้อสอบและทบทวนข้อผิด';
+            renderAdultChapterChoices();
         }
     }
+
+    function renderAdultChapterChoices() {
+        const box = document.getElementById('adult-chapter-options');
+        if (!box || typeof adultChapters === 'undefined') return;
+        const analytics=AdultQuizEngine.getAnalytics();
+        const chapters=Object.values(analytics.chapterStats).filter(x=>x.attempts);
+        const weak=Object.entries(analytics.topicStats).filter(([,x])=>x.attempts).sort((a,b)=>a[1].score-b[1].score)[0];
+        box.innerHTML = `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input id="adult-all-chapters" type="checkbox" checked onchange="toggleAllAdultChapters(this.checked)">ทุกบท</label>` + adultChapters.map(ch => `<label class="flex gap-2 items-center bg-white p-2 rounded-lg border border-indigo-100"><input class="adult-chapter-choice" type="checkbox" value="${ch.id}" checked onchange="document.getElementById('adult-all-chapters').checked=false">${ch.name}</label>`).join('') + `<div class="sm:col-span-2 bg-white border border-indigo-100 rounded-lg p-3 text-xs text-slate-600"><b>Exam Analytics</b> · Overall: ${analytics.overallScore === null ? 'ยังไม่มีข้อมูล' : analytics.overallScore+'%'} · Weakest topic: ${weak ? weak[0] : 'ทำแบบทดสอบเพื่อเริ่มวิเคราะห์'}<div class="mt-1">${chapters.map(x=>`${x.name} ${x.score}%`).join(' · ')}</div></div>`;
+    }
+    function toggleAllAdultChapters(checked) { document.querySelectorAll('.adult-chapter-choice').forEach(el => el.checked = checked); }
+    function selectedAdultChapters() { const all=document.getElementById('adult-all-chapters'); return all && all.checked ? ['all'] : [...document.querySelectorAll('.adult-chapter-choice:checked')].map(el=>el.value); }
 
     function toggleSummaryModal() {
         const modal = document.getElementById('summary-modal');
@@ -272,6 +307,7 @@
         const isRandomQ = document.getElementById('random-questions').checked;
         const isRandomOpt = document.getElementById('random-options').checked;
         const countChoice = document.getElementById('question-count-select').value;
+        if (subject === 'adult') { startAdultQuiz({ level, isRandomQ, isRandomOpt, countChoice }); return; }
 
         let sourcePool = [];
         const subjData = quizData[subject] || quizData;
@@ -338,6 +374,19 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function startAdultQuiz({level, isRandomQ, isRandomOpt, countChoice}) {
+        const count = countChoice === 'all' ? 0 : parseInt(countChoice, 10);
+        const mode = document.getElementById('adult-mode-select').value;
+        const ok = AdultUI.startQuiz({chapters:selectedAdultChapters(), difficulty:level, mode, count, randomizeQ:isRandomQ, randomizeOpt:isRandomOpt});
+        if (!ok) return;
+        currentQuestions=AdultUI.currentQuestions; userAnswers=AdultUI.userAnswers;
+        document.getElementById('subject-badge').innerText='การพยาบาลผู้ใหญ่';
+        document.getElementById('level-badge').innerText=`${mode === 'practice' ? 'Practice' : mode === 'exam' ? 'Exam' : 'Mistake Review'} • ${currentQuestions.length} ข้อ`;
+        document.getElementById('setup-section').classList.add('hidden'); document.getElementById('quiz-section').classList.remove('hidden');
+        document.getElementById('submit-btn').classList.remove('hidden'); document.getElementById('result-box').classList.add('hidden'); document.getElementById('action-buttons').classList.add('hidden');
+        updateProgressBar(); renderQuestions(); window.scrollTo({top:0,behavior:'smooth'});
+    }
+
     function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -357,12 +406,13 @@
             let optionsHTML = '';
             qObj.options.forEach((opt, oIndex) => {
                 const optionLabel = labels[oIndex] || `${oIndex + 1}`;
+                const text = typeof opt === 'string' ? opt : opt.text;
                 optionsHTML += `
                     <label id="label-q${qIndex}-o${oIndex}" class="option-card flex items-start p-3.5 mb-2.5 bg-white border border-slate-200 rounded-lg cursor-pointer transition">
                         <input type="radio" name="q${qIndex}" value="${oIndex}" class="mt-0.5 mr-3 w-4 h-4 accent-blue-600 cursor-pointer" onchange="selectAnswer(${qIndex}, ${oIndex})">
                         <div class="flex gap-2 text-sm text-slate-800 leading-relaxed">
                             <span class="font-semibold text-blue-600 shrink-0">${optionLabel}.</span>
-                            <span>${opt}</span>
+                            <span>${text}</span>
                         </div>
                     </label>
                 `;
@@ -371,12 +421,12 @@
             qDiv.innerHTML = `
                 <div class="flex items-start gap-2.5 mb-4">
                     <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-0.5 rounded text-xs shrink-0 mt-0.5">ข้อ ${qIndex + 1}</span>
-                    <h3 class="text-base md:text-lg font-bold text-slate-900 leading-relaxed">${qObj.q}</h3>
+                    <h3 class="text-base md:text-lg font-bold text-slate-900 leading-relaxed">${qObj.question || qObj.q}</h3>
                 </div>
                 <div class="options-container">${optionsHTML}</div>
                 <div id="expl-q${qIndex}" class="explanation p-4 mt-3 text-sm">
                     <strong class="text-slate-800 font-semibold block mb-1">💡 เฉลยและเหตุผล:</strong>
-                    <div class="text-slate-700 leading-relaxed">${qObj.reason}</div>
+                    <div class="text-slate-700 leading-relaxed">${qObj.explanation || qObj.reason || ''}</div>
                 </div>
             `;
             container.appendChild(qDiv);
@@ -384,7 +434,9 @@
     }
 
     function selectAnswer(qIndex, oIndex) {
-        userAnswers[qIndex] = oIndex;
+        const isAdult = document.getElementById('subject-select').value === 'adult';
+        userAnswers[qIndex] = isAdult ? currentQuestions[qIndex].options[oIndex].id : oIndex;
+        if (isAdult) AdultUI.setAnswer(qIndex, userAnswers[qIndex]);
 
         const qOptions = currentQuestions[qIndex].options;
         qOptions.forEach((_, idx) => {
@@ -399,6 +451,14 @@
         });
 
         updateProgressBar();
+        if (isAdult && AdultUI.currentMode === QUIZ_MODE.PRACTICE) showAdultPracticeFeedback(qIndex, oIndex);
+    }
+
+    function showAdultPracticeFeedback(qIndex, oIndex) {
+        const q=currentQuestions[qIndex], selected=q.options[oIndex].id;
+        document.querySelectorAll(`input[name="q${qIndex}"]`).forEach(r=>r.disabled=true);
+        q.options.forEach((o,i)=>{ const lbl=document.getElementById(`label-q${qIndex}-o${i}`); if(o.id===q.correctAnswer) lbl.classList.add('correct-ans'); else if(o.id===selected) lbl.classList.add('wrong-ans'); });
+        document.getElementById(`expl-q${qIndex}`).style.display='block';
     }
 
     function updateProgressBar() {
@@ -411,6 +471,7 @@
     }
 
     function submitQuiz() {
+        if (document.getElementById('subject-select').value === 'adult') { submitAdultQuiz(); return; }
         const unanswered = userAnswers.map((a, idx) => a === null ? idx + 1 : null).filter(a => a !== null);
 
         if (unanswered.length > 0) {
@@ -479,6 +540,20 @@
 
         resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    function submitAdultQuiz() {
+        const unanswered=userAnswers.map((a,i)=>a===null?i+1:null).filter(Boolean);
+        if(unanswered.length){ alert(`กรุณาตอบให้ครบทุกข้อ (ยังไม่ได้ตอบข้อ: ${unanswered.join(', ')})`); return; }
+        const result=AdultUI.submitQuiz();
+        if(AdultUI.currentMode !== QUIZ_MODE.PRACTICE) currentQuestions.forEach((q,qi)=>q.options.forEach((o,oi)=>{ const l=document.getElementById(`label-q${qi}-o${oi}`); if(o.id===q.correctAnswer) l.classList.add('correct-ans'); else if(o.id===userAnswers[qi]) l.classList.add('wrong-ans'); document.querySelectorAll(`input[name="q${qi}"]`).forEach(r=>r.disabled=true); document.getElementById(`expl-q${qi}`).style.display='block'; }));
+        document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('action-buttons').classList.remove('hidden');
+        const weak=result.weakTopics.slice(0,3).map(x=>x.topic).join(' • ') || 'ยังไม่พบหัวข้อที่ตอบผิด';
+        const strong=result.strongTopics.slice(0,3).map(x=>x.topic).join(' • ') || 'ทำข้อสอบเพิ่มเพื่อหาแนวโน้ม';
+        const box=document.getElementById('result-box'); box.className='mt-6 p-6 rounded-xl bg-indigo-50 border border-indigo-200 text-slate-800'; box.innerHTML=`<div class="text-3xl font-extrabold">คะแนน: ${result.correct}/${result.total} (${result.percentage}%)</div><div class="mt-3 text-sm"><b>จุดแข็ง:</b> ${strong}</div><div class="mt-2 text-sm"><b>ควรทบทวน:</b> ${weak}</div><button onclick="startMistakeReview()" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">📚 ทบทวนเฉพาะข้อที่ผิด</button>`; box.classList.remove('hidden'); box.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    function startMistakeReview(){ document.getElementById('adult-mode-select').value='mistake'; resetSetup(); startQuiz(); }
+    function openAdultSummary(){ const modal=document.getElementById('summary-modal'); modal.classList.remove('hidden'); document.querySelector('#summary-modal h3').textContent='สรุปเนื้อหา Adult Nursing'; const c=document.getElementById('summary-modal-content'); c.innerHTML=`<div class="flex gap-2 mb-3"><button onclick="renderAdultSummary('quick')" class="px-2 py-1 bg-indigo-100 rounded">สรุปแบบเร็ว</button><button onclick="renderAdultSummary('exam')" class="px-2 py-1 bg-indigo-100 rounded">อ่านสอบ</button><button onclick="renderAdultSummary('detail')" class="px-2 py-1 bg-indigo-100 rounded">ละเอียด</button></div><div id="adult-summary-body"></div>`; renderAdultSummary('exam'); }
+    function renderAdultSummary(level){ const detail=level==='quick'?'สิ่งที่ควรจำ: ':'', body=document.getElementById('adult-summary-body'); body.innerHTML=adultChapters.map(ch=>`<section class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-3"><h4 class="font-bold">${ch.name}</h4><p class="mt-2">${detail}${ch.summary}</p><p class="mt-2 text-xs text-slate-500"><b>หัวข้อ:</b> ${ch.topics.join(' • ')}</p>${level!=='quick'?`<p class="mt-2 text-sm"><b>Nursing priority:</b> ประเมินอาการสำคัญและความปลอดภัยก่อน intervention; เชื่อมโยงข้อมูลผู้ป่วยกับหัวข้อในบท</p>`:''}${level==='detail'?`<p class="mt-2 text-xs text-slate-500">แหล่งข้อมูล: ${ch.sourceFiles.join(', ')}</p>`:''}</section>`).join(''); }
 
     function restartQuizWithSameSettings() {
         startQuiz();
