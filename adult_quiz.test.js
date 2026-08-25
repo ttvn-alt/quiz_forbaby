@@ -31,4 +31,11 @@ if (AdultQuizEngine.getQuestions({ chapters: ['all'], difficulty: 'expert', coun
 if (AdultQuizEngine.getQuestions({ chapters: ['adult-periop'], difficulty: 'expert', count: 30 }).length !== 30) {
   throw new Error('A chapter must provide 30 unique questions even when one difficulty is preferred.');
 }
+for (const mode of ['practice', 'exam']) {
+  const allQuestions = AdultQuizEngine.getQuestions({ chapters: ['all'], difficulty: 'expert', mode, count: 0 });
+  const oneChapter = AdultQuizEngine.getQuestions({ chapters: ['adult-urinary'], difficulty: 'expert', mode, count: 30 });
+  if (allQuestions.length !== 210 || oneChapter.length !== 30) {
+    throw new Error(`${mode} mode did not fill the selected chapter pool.`);
+  }
+}
 console.log('Adult Nursing bank validation passed.');

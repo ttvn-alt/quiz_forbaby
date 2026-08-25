@@ -188,7 +188,8 @@ const AdultQuizEngine = {
         // ระดับความยากเป็น "ระดับที่เน้น" ไม่ใช่โควตาที่ทำให้แบบทดสอบเหลือ 2 ข้อ
         // หากจำนวนที่ขอมากกว่าข้อของระดับนั้น ให้เติมข้อระดับอื่นจาก "บทเดิมเท่านั้น"
         // โดยไม่ซ้ำ questionId. Mistake mode ต้องคงเฉพาะข้อผิด จึงไม่เติมข้ออื่น
-        if (mode !== QUIZ_MODE.MISTAKE && difficulty !== 'all' && count > 0 && pool.length < count) {
+        const requestedPoolSize = count > 0 ? count : targetChapters.length * 30;
+        if (mode !== QUIZ_MODE.MISTAKE && difficulty !== 'all' && pool.length < requestedPoolSize) {
             const chosenIds = new Set(pool.map(q => q.id));
             const supplemental = [];
             targetChapters.forEach(chId => {

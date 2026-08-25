@@ -94,9 +94,16 @@ function toQuestion(chapter,row,index){
  // Keep distractor length close to the keyed answer. A visibly longer answer is
  // an unintended clue, so add natural clinical context rather than padding symbols.
  const fillers=['จากข้อมูลผู้ป่วยขณะนั้น','และติดตามผลหลังการดูแล','ตามลำดับความสำคัญของผู้ป่วย'];
- const balancedDistractors=distractors.map((text,di)=>{ let value=text, fi=0; while(value.length < correct.length*0.97) value += ` ${fillers[(di+fi++)%fillers.length]}`; return value; });
- const texts=[correct,...balancedDistractors]; let p=0;
- ['A','B','C','D'].forEach(letter=>options.push({id:letter,text:letter===target?correct:texts[++p]}));
+ const rawTexts=[correct,...distractors];
+ // Bring all four choices into the same visual-length band. The suffix is
+ // clinically neutral and is applied to every option, so length cannot reveal
+ // the key. Unlike the old implementation, the keyed option is not the sole
+ // option receiving extra wording.
+ const targetLength=Math.max(...rawTexts.map(t=>t.length))+18;
+ const paddedTexts=rawTexts.map((text,ti)=>{ let value=text, fi=0; while(value.length < targetLength) value += ` ${fillers[(ti+fi++)%fillers.length]}`; return value; });
+ const visualTarget=Math.max(...paddedTexts.map(text=>text.length));
+ const texts=paddedTexts.map(text=>text + '\u00a0'.repeat(visualTarget-text.length)); let p=0;
+ ['A','B','C','D'].forEach(letter=>options.push({id:letter,text:letter===target?texts[0]:texts[++p]}));
  return {id:`${chapter.id}-q${String(index+1).padStart(2,'0')}`,chapterId:chapter.id,topic,difficulty,questionType,question,scenario:questionType==='clinical'?question:'',options,correctAnswer:target,explanation:`หลักคิดของหัวข้อ “${topic}”: ${correct}`,rationale:`อ้างอิงหัวข้อ ${topic} จาก ${chapter.sourceFiles[0]}`,learningObjective:topic,sourceReference:chapter.sourceFiles[0],tags:[chapter.id,topic,questionType]};
 }
 const adultQuizData={};
