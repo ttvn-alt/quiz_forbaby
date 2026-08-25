@@ -47,21 +47,34 @@ const conciseRows = {
 
 function makeConciseChapter(id, objectives) {
  const chapter=adultChapters.find(c=>c.id===id), types=['basic','understanding','assessment','application','clinical'];
+ const subject = chapter.name.replace(/^บทที่ \d+ /,'').replace(/^การพยาบาลผู้ใหญ่และผู้สูงอายุที่มีปัญหา/,'ผู้ป่วยที่มีปัญหา');
+ const forms=[
+   (o)=>`ข้อใดเป็นแนวทางที่เหมาะสมในการดูแลผู้ป่วยเรื่อง${o}`,
+   (o)=>`การดูแลผู้ป่วยเรื่อง${o}มีเป้าหมายสำคัญข้อใด`,
+   (o)=>`เมื่อพบข้อมูลเกี่ยวกับ${o} พยาบาลควรดำเนินการใดก่อน`,
+   (o)=>`ผู้ป่วยมีปัญหาเกี่ยวกับ${o} การพยาบาลข้อใดเหมาะสมที่สุด`,
+   (o)=>`เมื่ออาการของผู้ป่วยสัมพันธ์กับ${o} ควรจัดลำดับการดูแลอย่างไร`
+ ];
+ const answerForms=[
+   (o)=>`ยึดหลัก${o}เป็นข้อมูลสำคัญในการดูแลและบันทึกผล`,
+   (o)=>`เพราะ${o}ช่วยให้เชื่อมโยงอาการกับการวางแผนการพยาบาล`,
+   (o)=>`ประเมิน${o}ร่วมกับอาการและข้อมูลแวดล้อมก่อนตัดสินใจ`,
+   (o)=>`ดำเนินการเรื่อง${o}ตามแผน พร้อมติดตามผลหลังให้การพยาบาล`,
+   (o)=>`จัดการ${o}ที่คุกคามความปลอดภัยก่อน แล้วรายงานผลตามลำดับ`
+ ];
+ const contexts=['ก่อนเริ่มให้การพยาบาล','ระหว่างติดตามอาการที่หอผู้ป่วย','เมื่อทบทวนข้อมูลกับผู้ป่วย','ก่อนบันทึกผลการประเมิน','เมื่อวางแผนจำหน่าย','ขณะติดตามผลการรักษา'];
+ const distractorForms=[
+     (o)=>[`ให้ความสำคัญกับ${o}เฉพาะเมื่อผู้ป่วยร้องขอ`,`สรุปเรื่อง${o}จากข้อมูลครั้งเดียวโดยไม่ติดตามซ้ำ`,`บันทึก${o}หลังสิ้นเวรโดยไม่เชื่อมโยงอาการ`],
+     (o)=>[`อธิบาย${o}จากตำราอย่างเดียวโดยไม่ประเมินผู้ป่วย`,`ใช้ผลตรวจเพียงค่าเดียวแทนการพิจารณา${o}`,`เลื่อนการทบทวน${o}จนกว่าจะเกิดภาวะแทรกซ้อน`],
+     (o)=>[`รอให้มีอาการรุนแรงก่อนจึงประเมิน${o}`,`ประเมิน${o}แล้วข้ามการตรวจข้อมูลร่วม`,`เปลี่ยนแผนการดูแลก่อนเก็บข้อมูลเรื่อง${o}`],
+     (o)=>[`ดำเนินการตามกิจวัตรก่อนโดยยังไม่พิจารณา${o}`,`เลือกการดูแลจากความเคยชินโดยไม่ติดตาม${o}`,`ให้คำแนะนำเรื่องอื่นก่อนประเมิน${o}`],
+     (o)=>[`จัดการเรื่องรองก่อนแล้วค่อยประเมิน${o}`,`รอการส่งเวรครั้งถัดไปก่อนรายงาน${o}`,`ให้ผู้ป่วยทำกิจกรรมเองก่อนประเมินความเสี่ยงเรื่อง${o}`]
+ ];
  return objectives.map((objective,i)=>{
-   const isScenario=i>=15;
-   const question=isScenario
-     ? `ผู้ป่วยใน${chapter.name}มีประเด็น “${objective}” ระหว่างการประเมิน พยาบาลควรทำสิ่งใดก่อน`
-     : `ในการพยาบาลผู้ป่วย${chapter.name} ข้อใดเป็นแนวปฏิบัติที่เหมาะสมเกี่ยวกับ “${objective}”`;
-   // Every option deliberately addresses the same knowledge point. This prevents a broad,
-   // unrelated sentence from becoming the obviously correct option.
-   const correct=isScenario
-     ? `ประเมิน “${objective}” พร้อมอาการและข้อมูลที่เกี่ยวข้อง แล้วจัดลำดับความเร่งด่วน`
-     : `ประเมินและบันทึก “${objective}” อย่างเป็นระบบ โดยเชื่อมโยงกับอาการผู้ป่วย`;
-   const distractors=[
-     `ใช้ข้อมูลเกี่ยวกับ “${objective}” เพียงครั้งเดียว โดยยังไม่ประเมินอาการหรือข้อมูลร่วม`,
-     `เลื่อนการประเมิน “${objective}” จนกว่าผู้ป่วยจะรายงานอาการเพิ่มหรือร้องขอ`,
-     `ปรับแผนการพยาบาลก่อนเก็บข้อมูลเพื่อประเมิน “${objective}” และอาการร่วมให้ครบถ้วน`
-   ];
+   const type=i%5;
+   const question=forms[type](objective) + ` ${contexts[i%contexts.length]}` + (i>=20 ? ' โดยคำนึงถึงความปลอดภัยเป็นอันดับแรก' : '');
+   const correct=answerForms[type](objective) + ` ${contexts[(i+2)%contexts.length]}`;
+   const distractors=distractorForms[type](objective);
    return [objective,['easy','easy','medium','medium','hard','hard','expert'][i%7],types[i%5],question,correct,distractors];
  });
 }
@@ -78,7 +91,11 @@ Object.entries(conciseRows).forEach(([id,rows])=>adultBankRows[id]=makeConciseCh
 const answerPattern=['C','A','D','B','A','C','D','B','B','D','A','C','D','B','C','A','C','D','A','B','B','A','D','C','A','B','C','D','A','B'];
 function toQuestion(chapter,row,index){
  const [topic,difficulty,questionType,question,correct,distractors]=row, target=answerPattern[index], options=[];
- const texts=[correct,...distractors]; let p=0;
+ // Keep distractor length close to the keyed answer. A visibly longer answer is
+ // an unintended clue, so add natural clinical context rather than padding symbols.
+ const fillers=['จากข้อมูลผู้ป่วยขณะนั้น','และติดตามผลหลังการดูแล','ตามลำดับความสำคัญของผู้ป่วย'];
+ const balancedDistractors=distractors.map((text,di)=>{ let value=text, fi=0; while(value.length < correct.length*0.97) value += ` ${fillers[(di+fi++)%fillers.length]}`; return value; });
+ const texts=[correct,...balancedDistractors]; let p=0;
  ['A','B','C','D'].forEach(letter=>options.push({id:letter,text:letter===target?correct:texts[++p]}));
  return {id:`${chapter.id}-q${String(index+1).padStart(2,'0')}`,chapterId:chapter.id,topic,difficulty,questionType,question,scenario:questionType==='clinical'?question:'',options,correctAnswer:target,explanation:`หลักคิดของหัวข้อ “${topic}”: ${correct}`,rationale:`อ้างอิงหัวข้อ ${topic} จาก ${chapter.sourceFiles[0]}`,learningObjective:topic,sourceReference:chapter.sourceFiles[0],tags:[chapter.id,topic,questionType]};
 }
