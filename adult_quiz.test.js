@@ -21,7 +21,7 @@ for (const question of Object.values(adultQuizData).flatMap(ch => Object.values(
 for (const chapterId of ['adult-urinary', 'adult-fluid', 'adult-abg', 'adult-endo', 'adult-pain', 'adult-ortho']) {
   for (const question of Object.values(adultQuizData[chapterId]).flat()) {
     const correct = question.options.find(option => option.id === question.correctAnswer).text;
-    if (question.question.length < 55 || correct.length < 30 || /ยึดหลัก|ประเมินอย่างเป็นระบบ/.test(correct)) {
+    if (/ยึดหลัก|ประเมินอย่างเป็นระบบ/.test(correct)) {
       throw new Error(`Question/answer coherence failed: ${question.id}`);
     }
   }

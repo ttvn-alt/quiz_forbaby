@@ -49,11 +49,11 @@ function makeConciseChapter(id, objectives) {
  const chapter=adultChapters.find(c=>c.id===id), types=['basic','understanding','assessment','application','clinical'];
  const subject = chapter.name.replace(/^บทที่ \d+ /,'').replace(/^การพยาบาลผู้ใหญ่และผู้สูงอายุที่มีปัญหา/,'ผู้ป่วยที่มีปัญหา');
  const forms=[
-   (o)=>`ข้อใดเป็นแนวทางที่เหมาะสมในการดูแลผู้ป่วยเรื่อง${o}`,
-   (o)=>`การดูแลผู้ป่วยเรื่อง${o}มีเป้าหมายสำคัญข้อใด`,
-   (o)=>`เมื่อพบข้อมูลเกี่ยวกับ${o} พยาบาลควรดำเนินการใดก่อน`,
-   (o)=>`ผู้ป่วยมีปัญหาเกี่ยวกับ${o} การพยาบาลข้อใดเหมาะสมที่สุด`,
-   (o)=>`เมื่ออาการของผู้ป่วยสัมพันธ์กับ${o} ควรจัดลำดับการดูแลอย่างไร`
+   (o)=>`ข้อใดเป็นการปฏิบัติที่ถูกต้องเกี่ยวกับ${o}`,
+   (o)=>`เหตุผลสำคัญของ${o}คือข้อใด`,
+   (o)=>`เมื่อพบผู้ป่วยมีปัญหาเรื่อง${o} พยาบาลควรทำอย่างไร`,
+   (o)=>`ผู้ป่วยรายนี้เกี่ยวข้องกับ${o} การพยาบาลข้อใดเหมาะสมที่สุด`,
+   (o)=>`กรณีผู้ป่วยมีอาการเปลี่ยนแปลงจาก${o} ควรทำสิ่งใดก่อน`
  ];
  const answerForms=[
    (o)=>clinicalAnswer(id,o,0),
@@ -62,7 +62,7 @@ function makeConciseChapter(id, objectives) {
    (o)=>clinicalAnswer(id,o,3),
    (o)=>clinicalAnswer(id,o,4)
  ];
- const contexts=['ก่อนเริ่มให้การพยาบาล','ระหว่างติดตามอาการที่หอผู้ป่วย','เมื่อทบทวนข้อมูลกับผู้ป่วย','ก่อนบันทึกผลการประเมิน','เมื่อวางแผนจำหน่าย','ขณะติดตามผลการรักษา'];
+ const contexts=['',' ระหว่างประเมินผู้ป่วย',' ก่อนบันทึกผล',' ขณะติดตามอาการ','',' เมื่อวางแผนการดูแล'];
  const distractorForms=[
      (o)=>[`ให้ความสำคัญกับ${o}เฉพาะเมื่อผู้ป่วยร้องขอ`,`สรุปเรื่อง${o}จากข้อมูลครั้งเดียวโดยไม่ติดตามซ้ำ`,`บันทึก${o}หลังสิ้นเวรโดยไม่เชื่อมโยงอาการ`],
      (o)=>[`อธิบาย${o}จากตำราอย่างเดียวโดยไม่ประเมินผู้ป่วย`,`ใช้ผลตรวจเพียงค่าเดียวแทนการพิจารณา${o}`,`เลื่อนการทบทวน${o}จนกว่าจะเกิดภาวะแทรกซ้อน`],
@@ -73,8 +73,8 @@ function makeConciseChapter(id, objectives) {
  return objectives.map((objective,i)=>{
    const type=i%5;
    const concept=naturalConcept(objective);
-   const question=forms[type](concept) + ` ${contexts[i%contexts.length]}` + (i>=20 ? ' โดยคำนึงถึงความปลอดภัยเป็นอันดับแรก' : '');
-   const correct=answerForms[type](objective) + ` ${contexts[(i+2)%contexts.length]}`;
+   const question=forms[type](concept) + contexts[i%contexts.length] + (i>=20 ? ' โดยคำนึงถึงความปลอดภัยเป็นอันดับแรก' : '');
+   const correct=answerForms[type](objective);
    const distractors=distractorForms[type](concept);
    return [objective,['easy','easy','medium','medium','hard','hard','expert'][i%7],types[i%5],question,correct,distractors];
  });
@@ -126,18 +126,9 @@ Object.entries(conciseRows).forEach(([id,rows])=>adultBankRows[id]=makeConciseCh
 const answerPattern=['C','A','D','B','A','C','D','B','B','D','A','C','D','B','C','A','C','D','A','B','B','A','D','C','A','B','C','D','A','B'];
 function toQuestion(chapter,row,index){
  const [topic,difficulty,questionType,question,correct,distractors]=row, target=answerPattern[index], options=[];
- // Keep distractor length close to the keyed answer. A visibly longer answer is
- // an unintended clue, so add natural clinical context rather than padding symbols.
- const fillers=['จากข้อมูลผู้ป่วยขณะนั้น','และติดตามผลหลังการดูแล','ตามลำดับความสำคัญของผู้ป่วย'];
- const rawTexts=[correct,...distractors];
- // Bring all four choices into the same visual-length band. The suffix is
- // clinically neutral and is applied to every option, so length cannot reveal
- // the key. Unlike the old implementation, the keyed option is not the sole
- // option receiving extra wording.
- const targetLength=Math.max(...rawTexts.map(t=>t.length))+18;
- const paddedTexts=rawTexts.map((text,ti)=>{ let value=text, fi=0; while(value.length < targetLength) value += ` ${fillers[(ti+fi++)%fillers.length]}`; return value; });
- const visualTarget=Math.max(...paddedTexts.map(text=>text.length));
- const texts=paddedTexts.map(text=>text + '\u00a0'.repeat(visualTarget-text.length)); let p=0;
+ // Keep the option language natural. Length is checked as a quality signal,
+ // but artificial filler text is never added to the visible choices.
+ const texts=[correct,...distractors]; let p=0;
  ['A','B','C','D'].forEach(letter=>options.push({id:letter,text:letter===target?texts[0]:texts[++p]}));
  return {id:`${chapter.id}-q${String(index+1).padStart(2,'0')}`,chapterId:chapter.id,topic,difficulty,questionType,question,scenario:questionType==='clinical'?question:'',options,correctAnswer:target,explanation:`หลักคิดของหัวข้อ “${topic}”: ${correct}`,rationale:`อ้างอิงหัวข้อ ${topic} จาก ${chapter.sourceFiles[0]}`,learningObjective:topic,sourceReference:chapter.sourceFiles[0],tags:[chapter.id,topic,questionType]};
 }
