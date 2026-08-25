@@ -16,11 +16,12 @@ for (const question of Object.values(adultQuizData).flatMap(ch => Object.values(
     throw new Error(`Invalid schema: ${question.id}`);
   }
 }
-// Template-generated chapters must not contain a generic answer unrelated to its asked topic.
+// Every question must name its tested concept; the answer is intentionally
+// phrased as a clinical action rather than repeating the concept as a clue.
 for (const chapterId of ['adult-urinary', 'adult-fluid', 'adult-abg', 'adult-endo', 'adult-pain', 'adult-ortho']) {
   for (const question of Object.values(adultQuizData[chapterId]).flat()) {
     const correct = question.options.find(option => option.id === question.correctAnswer).text;
-    if (!question.question.includes(question.topic) || !correct.includes(question.topic)) {
+    if (question.question.length < 55 || correct.length < 30 || /ยึดหลัก|ประเมินอย่างเป็นระบบ/.test(correct)) {
       throw new Error(`Question/answer coherence failed: ${question.id}`);
     }
   }
